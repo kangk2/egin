@@ -8,6 +8,7 @@ import (
     "os"
     "regexp"
     "strings"
+    "github.com/daodao97/egin/pkg/lib"
 )
 
 type ConfigStruct struct {
@@ -32,7 +33,8 @@ func init() {
 
     for i := range all {
         s := all[i]
-        r := os.Getenv(strings.TrimRight(strings.TrimLeft(s, "<"), ">"))
+        factory := lib.String{Str: s}
+        r := os.Getenv(factory.TrimLeft("<").TrimRight(">").Done())
         str = strings.Replace(str, s, r, -1)
     }
 
