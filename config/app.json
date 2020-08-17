@@ -1,4 +1,18 @@
 {
     "address": "127.0.0.1:8080",
-    "mode": "<GIN_MODE>"
+    "mode": "<GIN_MODE>",
+    "custom": [1,2,3],
+    "logger": {
+        "fileName": "tmp/app.log",
+        "level": 5
+    },
+    "database": {
+        "default": {
+            "host": "localhost",
+            "port": 3306,
+            "user": "root",
+            "passwd": "root",
+            "options": {}
+        }
+    }
 }

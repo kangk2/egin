@@ -2,6 +2,7 @@ package db
 
 import (
     "fmt"
+    "github.com/daodao97/egin/pkg/utils"
     "github.com/jinzhu/gorm"
     _ "github.com/jinzhu/gorm/dialects/mysql"
     "reflect"
@@ -15,6 +16,7 @@ type BaseModel struct {
     Driver   string
     Database string
     Table    string
+    Connect  string
     db       *gorm.DB
     Entity   interface{}
 }
@@ -25,9 +27,24 @@ func (m *BaseModel) init() {
     if m.Driver == "" {
         m.Driver = "mysql"
     }
-    user := "root"
-    pwd := "root"
-    dsn := fmt.Sprintf("%s:%s@/%s?charset=utf8&parseTime=True&loc=Local", user, pwd, m.Database)
+    if m.Connect == "" {
+        m.Connect = "default"
+    }
+
+    dbConf, ok := utils.Config.Database[m.Connect]
+    if !ok {
+        panic(fmt.Sprintf("database %s not found", m.Connect))
+    }
+
+    dsn := fmt.Sprintf(
+        "%s:%s@(%s)/%s?charset=utf8&parseTime=True&loc=Local",
+        dbConf.User,
+        dbConf.Passwd,
+        fmt.Sprintf("%s:%d", dbConf.Host, dbConf.Port),
+        m.Database,
+    )
+    utils.Logger.Info("222222222")
+    fmt.Println(dsn)
     db, err := gorm.Open(m.Driver, dsn)
     if err != nil {
         panic("failed to connect database")

@@ -1,4 +1,4 @@
-package pkg
+package utils
 
 import (
     "encoding/json"
@@ -12,8 +12,27 @@ import (
 )
 
 type ConfigStruct struct {
-    Address string
-    Mode    string
+    Address  string
+    Mode     string
+    Custom   interface{}
+    Database Database
+    Redis    interface{}
+    Logger   LoggerStruct
+}
+
+type Database map[string]struct {
+    Host    string
+    Port    int
+    User    string
+    Passwd  string
+    Options map[string]string
+}
+
+type LoggerStruct struct {
+    Type      string // stdout|file
+    FileName  string
+    Formatter string
+    Level     int // 0 PanicLevel 5 InfoLevel 6 DebugLevel
 }
 
 var Config ConfigStruct
@@ -44,6 +63,7 @@ func init() {
     }
 
     err = json.Unmarshal([]byte(str), &Config)
+    fmt.Println(Config)
     if err != nil {
         return
     }
