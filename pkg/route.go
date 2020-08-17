@@ -1,8 +1,8 @@
 package pkg
 
 import (
-    "./lib"
     "fmt"
+    "github.com/daodao97/egin/pkg/lib"
     "github.com/gin-gonic/gin"
     "strings"
 )

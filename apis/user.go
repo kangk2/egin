@@ -1,6 +1,7 @@
 package apis
 
 import (
+    "github.com/daodao97/egin/module"
     "github.com/gin-gonic/gin"
 )
 
@@ -12,10 +13,11 @@ type User struct {
     BaseApi
 }
 
-func (this User) Get(c *gin.Context) interface{} {
-    return map[string]string{
-        "field": "ccc",
-        "field2": "ccc",
-        "field3": "ccc",
-    }
+func (u User) Get(c *gin.Context) interface{} {
+    result := make(map[string]interface{})
+    user := module.UserModel
+    result["user"] = user.Get()
+    config := module.ConfigModel
+    result["config"] = config.Get()
+    return result
 }

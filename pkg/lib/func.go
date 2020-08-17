@@ -2,9 +2,12 @@ package lib
 
 import (
     "fmt"
+    "log"
     "reflect"
+    "strings"
 )
 
+// 反射调用结构体方法
 func Invoke(any interface{}, name string, args ...interface{}) (reflect.Value, error) {
     method := reflect.ValueOf(any).MethodByName(name)
     notExist := method == reflect.Value{}
@@ -39,4 +42,107 @@ func Invoke(any interface{}, name string, args ...interface{}) (reflect.Value, e
         }
     }
     return method.Call(in)[0], nil
+}
+
+//获取结构体中字段的名称
+func GetStructFieldsName(structName interface{}) []string {
+    t := reflect.TypeOf(structName)
+    if t.Kind() == reflect.Ptr {
+        t = t.Elem()
+    }
+    if t.Kind() != reflect.Struct {
+        log.Println("Check type error not Struct")
+        return nil
+    }
+    fieldNum := t.NumField()
+    result := make([]string, 0, fieldNum)
+    for i := 0; i < fieldNum; i++ {
+        result = append(result, t.Field(i).Name)
+    }
+    return result
+}
+
+//获取结构体中Tag的值，如果没有tag则返回字段值
+func GetStructTags(structName interface{}) map[string]map[string]string {
+    t := reflect.TypeOf(structName)
+    if t.Kind() == reflect.Ptr {
+        t = t.Elem()
+    }
+    if t.Kind() != reflect.Struct {
+        log.Println("Check type error not Struct")
+        return nil
+    }
+    fieldNum := t.NumField()
+    result := make(map[string]map[string]string)
+    for i := 0; i < fieldNum; i++ {
+        fieldName := t.Field(i).Name
+        tagStr := string(t.Field(i).Tag)
+        if tagStr != "" {
+            tokens := strings.Split(tagStr, " ")
+            part := make(map[string]string)
+            for i := range tokens {
+                tagInfo := strings.Split(strings.Replace(tokens[i], "\"", "", -1), ":")
+                if len(tagInfo) > 1 {
+                    part[tagInfo[0]] = tagInfo[1]
+                }
+            }
+            result[fieldName] = part
+        }
+    }
+    return result
+}
+
+// 通过反射, 将map中的val更新到struct对应的field中
+func UpdateStructByMap(structName interface{}, defaultVal map[string]interface{}) {
+    t := reflect.TypeOf(structName)
+    if t.Kind() == reflect.Ptr {
+        t = t.Elem()
+    }
+    if t.Kind() != reflect.Struct {
+        log.Println("Check type error not Struct")
+        return
+    }
+
+    ps := reflect.ValueOf(structName)
+    // struct
+    s := ps.Elem()
+
+    for k, v := range defaultVal {
+        f := s.FieldByName(k)
+        if f.IsValid() {
+            if f.CanSet() {
+                switch f.Kind() {
+                case reflect.Int:
+                    x := v.(int64)
+                    if !f.OverflowInt(x) {
+                        f.SetInt(x)
+                    }
+                case reflect.String:
+                    f.SetString(v.(string))
+                }
+            }
+        }
+    }
+}
+
+func CompareDefaultTag(any interface{})  {
+    t := reflect.TypeOf(any)
+    if t.Kind() == reflect.Ptr {
+        t = t.Elem()
+    }
+    if t.Kind() != reflect.Struct {
+        log.Println("Check type error not Struct")
+        return
+    }
+    fields := GetStructFieldsName(any)
+    tags := GetStructTags(any)
+    defaultVal := make(map[string]interface{})
+    for i := range fields {
+        fieldName := fields[i]
+        if fieldDefaultVal, hasKey := tags[fieldName]["default"]; hasKey {
+            defaultVal[fieldName] = fieldDefaultVal
+        }
+    }
+    UpdateStructByMap(any, defaultVal)
+    fmt.Println(any)
 }

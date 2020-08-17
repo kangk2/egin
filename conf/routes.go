@@ -1,8 +1,8 @@
 package conf
 
 import (
-    "../apis"
-    "../pkg"
+    "github.com/daodao97/egin/apis"
+    "github.com/daodao97/egin/pkg"
 )
 
 func Routes() pkg.RouteMap {
