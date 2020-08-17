@@ -7,7 +7,7 @@ import (
 
 func main() {
     boot := pkg.Bootstrap{
-        RouteMap: conf.Routes(),
+        RouteMap: config.Routes(),
     }
     boot.Start()
 }
