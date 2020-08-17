@@ -1,7 +1,7 @@
 package main
 
 import (
-    "github.com/daodao97/egin/conf"
+    "github.com/daodao97/egin/config"
     "github.com/daodao97/egin/pkg"
 )
 
