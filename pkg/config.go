@@ -3,12 +3,12 @@ package pkg
 import (
     "encoding/json"
     "fmt"
+    "github.com/daodao97/egin/pkg/lib"
     "github.com/joho/godotenv"
     "io/ioutil"
     "os"
     "regexp"
     "strings"
-    "github.com/daodao97/egin/pkg/lib"
 )
 
 type ConfigStruct struct {
@@ -20,10 +20,15 @@ var Config ConfigStruct
 
 func init() {
     if err := godotenv.Load(".env"); err != nil {
-        fmt.Printf("not found .env %s", err)
+        fmt.Printf("not found .env\n%s\n", err)
     }
 
-    data, err := ioutil.ReadFile("./conf/app.json")
+    data, err := ioutil.ReadFile("./config/app.json")
+
+    if err != nil {
+        fmt.Printf("load config/app.json fail\n%s\n", err)
+        os.Exit(2)
+    }
 
     str := string(data)
 
@@ -36,10 +41,6 @@ func init() {
         factory := lib.String{Str: s}
         r := os.Getenv(factory.TrimLeft("<").TrimRight(">").Done())
         str = strings.Replace(str, s, r, -1)
-    }
-
-    if err != nil {
-        fmt.Printf("load config fail %s", err)
     }
 
     err = json.Unmarshal([]byte(str), &Config)
