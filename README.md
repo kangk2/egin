@@ -39,8 +39,8 @@ go get -u github.com/pilu/fresh
 
 我们将在 `conf/routes.go` 中集中定义项目路由, 项目启动时统一注册到`Gin`框架中
 
--[x] conf/routes.go 基础路由定义
--[ ] conf/routes/**.go 多文件定义
+- [x] conf/routes.go 基础路由定义
+- [ ] conf/routes/**.go 多文件定义
 
 ### 控制器的封装
 
