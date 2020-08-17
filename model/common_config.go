@@ -1,4 +1,4 @@
-package module
+package model
 
 import (
     "github.com/daodao97/egin/pkg/db"

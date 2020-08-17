@@ -1,7 +1,8 @@
-package apis
+package controller
 
 import (
-    "github.com/daodao97/egin/module"
+    "github.com/daodao97/egin/model"
+    "github.com/davecgh/go-spew/spew"
     "github.com/gin-gonic/gin"
 )
 
@@ -14,10 +15,11 @@ type User struct {
 }
 
 func (u User) Get(c *gin.Context) interface{} {
+    spew.Dump(c.GetQuery("id"))
     result := make(map[string]interface{})
-    user := module.UserModel
+    user := model.UserModel
     result["user"] = user.Get()
-    config := module.ConfigModel
+    config := model.ConfigModel
     result["config"] = config.Get()
     return result
 }

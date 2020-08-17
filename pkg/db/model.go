@@ -2,7 +2,6 @@ package db
 
 import (
     "fmt"
-    "github.com/daodao97/egin/pkg/lib"
     "github.com/jinzhu/gorm"
     _ "github.com/jinzhu/gorm/dialects/mysql"
     "reflect"
@@ -13,7 +12,7 @@ type Model struct {
 }
 
 type BaseModel struct {
-    Driver   string `default:"mysql"`
+    Driver   string
     Database string
     Table    string
     db       *gorm.DB
@@ -23,7 +22,9 @@ type BaseModel struct {
 type Filter map[string]interface{}
 
 func (m *BaseModel) init() {
-    lib.CompareDefaultTag(m)
+    if m.Driver == "" {
+        m.Driver = "mysql"
+    }
     user := "root"
     pwd := "root"
     dsn := fmt.Sprintf("%s:%s@/%s?charset=utf8&parseTime=True&loc=Local", user, pwd, m.Database)
@@ -32,10 +33,10 @@ func (m *BaseModel) init() {
         panic("failed to connect database")
     }
     //defer db.Close()
-    m.db = db.Table(m.Table)
+    m.db = db.Table(m.Table).Debug()
 }
 
-func (m *BaseModel) Get() interface{} {
+func (m *BaseModel) Get(filter ...Filter) interface{} {
     if m.db == nil {
         m.init()
     }
@@ -47,7 +48,7 @@ func (m *BaseModel) Get() interface{} {
     sliceType := reflect.SliceOf(reflect.TypeOf(m.Entity))
     result := reflect.New(sliceType).Interface()
 
-    m.db.Where("id > ?", 0).Scan(result)
+    m.db.Model(m.Entity).Where("id > ?", 0).Scan(result)
 
     return result
 }
