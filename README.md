@@ -43,10 +43,30 @@ go get -u github.com/pilu/fresh
 - [x] conf/routes.go 基础路由定义
 - [ ] conf/routes/**.go 多文件定义
 
+### 配置的管理
+
+- [x] pkg/utils/config.go env,json等配置方式的支持
+
+### 日志
+
+- [x] pkg/utils/logger.go 基于logrus的日志管理, 标准输出/文件(分割)
+- [ ] 日志输出到 es/mongo/redis 
+
 ### 控制器的封装
 
 基于单一数据模型的`CRUD`通用控制器方法
 
+- [ ] 底层通用方法
+
 ### 数据模型的封装
 
 基于单表的`CRUD`方法
+
+- [x] pkg/db/model.go 连接池 
+- [ ] pkg/db/model.go crud 方法封装 
+
+### 数据验证
+
+- [ ] 验证器
+- [ ] 接口参数合法性自动验证
+
