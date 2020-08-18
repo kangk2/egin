@@ -3,6 +3,7 @@
     "mode": "<GIN_MODE>",
     "custom": [1,2,3],
     "logger": {
+        "type": "stdout",
         "fileName": "tmp/app.log",
         "level": 5
     },

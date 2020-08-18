@@ -7,7 +7,7 @@ import (
 )
 
 // 日志记录到文件
-func LoggerToFile() gin.HandlerFunc {
+func HttpLog() gin.HandlerFunc {
 
     return func(c *gin.Context) {
         startTime := time.Now()
@@ -26,33 +26,12 @@ func LoggerToFile() gin.HandlerFunc {
         // 请求IP
         clientIP := c.ClientIP()
         // 日志格式
-        utils.Logger.Info(map[string]interface{}{
+        utils.Logger.Info("http end", map[string]interface{}{
             "status_code":  statusCode,
             "latency_time": latencyTime,
             "client_ip":    clientIP,
             "req_method":   reqMethod,
             "req_uri":      reqUri,
         })
-    }
-}
-
-// 日志记录到 MongoDB
-func LoggerToMongo() gin.HandlerFunc {
-    return func(c *gin.Context) {
-
-    }
-}
-
-// 日志记录到 ES
-func LoggerToES() gin.HandlerFunc {
-    return func(c *gin.Context) {
-
-    }
-}
-
-// 日志记录到 MQ
-func LoggerToMQ() gin.HandlerFunc {
-    return func(c *gin.Context) {
-
     }
 }

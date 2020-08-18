@@ -17,7 +17,7 @@ func (boot *Bootstrap) Start() {
     gin.SetMode(utils.Config.Mode)
     gin.DefaultWriter = ginLogger()
     r := gin.Default()
-    r.Use(middleware.LoggerToFile())
+    r.Use(middleware.HttpLog())
     RegRoutes(r, boot.RouteMap)
     fmt.Println(utils.Config)
     err := r.Run(utils.Config.Address)

@@ -1,48 +1,74 @@
 package utils
 
 import (
-    "fmt"
     rotatelogs "github.com/lestrrat-go/file-rotatelogs"
-    "github.com/rifflock/lfshook"
     "github.com/sirupsen/logrus"
+    "io"
     "os"
     "time"
 )
 
 type LoggerInstance struct {
+    _channel string
 }
 
 var Logger LoggerInstance
 
-func (l LoggerInstance) Info(message interface{}) {
-    logrusLogger().WithFields(logrus.Fields{
-        "message": message,
-    }).Info()
+var logrusInstance *logrus.Logger
+
+func (l LoggerInstance) Channel(channel string) LoggerInstance {
+    l._channel = channel
+    return l
+}
+func (l LoggerInstance) Info(message interface{}, content ...interface{}) {
+    logrusInstance.WithFields(logrus.Fields{
+        "content": content,
+        "channel": l._channel,
+    }).Info(message)
 }
 
-func logrusLogger() *logrus.Logger {
+func init() {
+    logrusInstance = loggerFactory()
+    Logger = LoggerInstance{"app"}
+}
+
+func loggerFactory() *logrus.Logger {
+    conf := Config.Logger
+    switch conf.Type {
+    case "stdout":
+        return stdoutLogger()
+    case "file":
+        return fileLogger()
+    default:
+        return stdoutLogger()
+    }
+}
+
+func stdoutLogger() *logrus.Logger {
     loggerConf := Config.Logger
 
-    // 日志文件
-    fileName := loggerConf.FileName
-
-    // 写入文件
-    src, err := os.OpenFile(fileName, os.O_APPEND|os.O_WRONLY, os.ModeAppend)
-    if err != nil {
-        fmt.Println("err", err)
-    }
-
-    // 实例化
     logger := logrus.New()
 
-    // 设置输出
-    logger.Out = src
+    logWriter := io.Writer(os.Stdout)
+    logger.Out = logWriter
 
-    // 设置日志级别
+    logger.SetFormatter(&logrus.JSONFormatter{
+        TimestampFormat: "2006-01-02 15:04:05",
+    })
+
     logger.SetLevel(logrus.Level(loggerConf.Level))
 
-    // 设置 rotatelogs
-    logWriter, err := rotatelogs.New(
+    return logger
+}
+
+func fileLogger() *logrus.Logger {
+    loggerConf := Config.Logger
+
+    fileName := loggerConf.FileName
+
+    logger := logrus.New()
+
+    logWriter, _ := rotatelogs.New(
         // 分割后的文件名称
         fileName+".%Y%m%d.log",
 
@@ -56,21 +82,17 @@ func logrusLogger() *logrus.Logger {
         rotatelogs.WithRotationTime(24*time.Hour),
     )
 
-    writeMap := lfshook.WriterMap{
-        logrus.InfoLevel:  logWriter,
-        logrus.FatalLevel: logWriter,
-        logrus.DebugLevel: logWriter,
-        logrus.WarnLevel:  logWriter,
-        logrus.ErrorLevel: logWriter,
-        logrus.PanicLevel: logWriter,
-    }
+    logger.Out = logWriter
 
-    lfHook := lfshook.NewHook(writeMap, &logrus.JSONFormatter{
+    logger.SetFormatter(&logrus.JSONFormatter{
         TimestampFormat: "2006-01-02 15:04:05",
     })
 
-    // 新增 Hook
-    logger.AddHook(lfHook)
+    logger.SetLevel(logrus.Level(loggerConf.Level))
 
     return logger
 }
+
+func esLogger()  {}
+
+func mongoLogger()  {}

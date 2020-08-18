@@ -15,18 +15,20 @@ type ConfigStruct struct {
     Address  string
     Mode     string
     Custom   interface{}
-    Database Database
+    Database Databases
     Redis    interface{}
     Logger   LoggerStruct
 }
 
-type Database map[string]struct {
-    Host    string
-    Port    int
-    User    string
-    Passwd  string
-    Options map[string]string
+type Database struct {
+Host    string
+Port    int
+User    string
+Passwd  string
+Options map[string]string
 }
+
+type Databases map[string]Database
 
 type LoggerStruct struct {
     Type      string // stdout|file
