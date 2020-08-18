@@ -75,3 +75,8 @@ go get -u github.com/pilu/fresh
 - [ ] 验证器
 - [ ] 接口参数合法性自动验证
 
+### 权限验证
+- [ ] JWT
+- [ ] AKSK
+
+

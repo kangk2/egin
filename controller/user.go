@@ -17,7 +17,7 @@ func (u User) Get(c *gin.Context) interface{} {
     result := make(map[string]interface{})
     user := model.UserModel
     result["user"] = user.Get()
-    //config := model.ConfigModel
-    //result["config"] = config.Get()
+    // config := model.ConfigModel
+    // result["config"] = config.Get()
     return result
 }

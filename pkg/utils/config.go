@@ -2,10 +2,10 @@ package utils
 
 import (
     "encoding/json"
-    "fmt"
     "github.com/daodao97/egin/pkg/lib"
     "github.com/joho/godotenv"
     "io/ioutil"
+    "log"
     "os"
     "regexp"
     "strings"
@@ -47,13 +47,13 @@ var Config ConfigStruct
 
 func init() {
     if err := godotenv.Load(".env"); err != nil {
-        fmt.Printf("not found .env\n%s\n", err)
+        log.Printf("not found .env\n%s\n", err)
     }
 
     data, err := ioutil.ReadFile("./config/app.json")
 
     if err != nil {
-        fmt.Printf("load config/app.json fail\n%s\n", err)
+        log.Printf("load config/app.json fail\n%s\n", err)
         os.Exit(2)
     }
 
@@ -71,7 +71,6 @@ func init() {
     }
 
     err = json.Unmarshal([]byte(str), &Config)
-    fmt.Println(Config)
     if err != nil {
         return
     }

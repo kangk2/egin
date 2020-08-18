@@ -15,7 +15,7 @@ func init() {
     entity := CommonConfigEntity{}
     ConfigModel = db.BaseModel{
         Connection: "default",
-        Table:    "common_config",
-        Entity:   entity,
+        Table:      "common_config",
+        Entity:     entity,
     }
 }

@@ -93,6 +93,6 @@ func fileLogger() *logrus.Logger {
     return logger
 }
 
-func esLogger()  {}
+func esLogger() {}
 
-func mongoLogger()  {}
+func mongoLogger() {}

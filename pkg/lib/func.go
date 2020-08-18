@@ -5,6 +5,7 @@ import (
     "log"
     "reflect"
     "strings"
+    "sync"
 )
 
 // 反射调用结构体方法
@@ -44,7 +45,7 @@ func Invoke(any interface{}, name string, args ...interface{}) (reflect.Value, e
     return method.Call(in)[0], nil
 }
 
-//获取结构体中字段的名称
+// 获取结构体中字段的名称
 func GetStructFieldsName(structName interface{}) []string {
     t := reflect.TypeOf(structName)
     if t.Kind() == reflect.Ptr {
@@ -62,7 +63,7 @@ func GetStructFieldsName(structName interface{}) []string {
     return result
 }
 
-//获取结构体中Tag的值，如果没有tag则返回字段值
+// 获取结构体中Tag的值，如果没有tag则返回字段值
 func GetStructTags(structName interface{}) map[string]map[string]string {
     t := reflect.TypeOf(structName)
     if t.Kind() == reflect.Ptr {
@@ -125,7 +126,7 @@ func UpdateStructByMap(structName interface{}, defaultVal map[string]interface{}
     }
 }
 
-func CompareDefaultTag(any interface{})  {
+func CompareDefaultTag(any interface{}) {
     t := reflect.TypeOf(any)
     if t.Kind() == reflect.Ptr {
         t = t.Elem()
@@ -145,4 +146,15 @@ func CompareDefaultTag(any interface{})  {
     }
     UpdateStructByMap(any, defaultVal)
     fmt.Println(any)
+}
+
+func WaitGo(number int, fu func()) {
+    var wg sync.WaitGroup
+    for i := 0; i < 1000; i++ {
+        wg.Add(1)
+        go func(index int) {
+            wg.Done()
+        }(i)
+    }
+    wg.Wait()
 }

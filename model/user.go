@@ -16,7 +16,7 @@ func init() {
     entity := UserEntity{}
     UserModel = db.BaseModel{
         Connection: "default",
-        Table:    "user",
-        Entity:   entity,
+        Table:      "user",
+        Entity:     entity,
     }
 }
