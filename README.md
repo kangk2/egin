@@ -2,6 +2,11 @@
 
 本项目作为`Go`入门的实践项目, 将基于`Gin`框架完成一些封装. 最终目标实现一个`配置化的`,`能够快速上手的`, `规范目录结构的`脚手架.
 
+1. Go编程基础(视频) [这里](https://study.163.com/course/courseMain.htm?courseId=306002)
+2. GOWeb基础(视频) [这里](https://study.163.com/course/courseMain.htm?courseId=328001)
+3. 入门指南(文档) [这里](https://github.com/unknwon/the-way-to-go_ZH_CN)
+4. Go语言圣经(文档) [这里](https://github.com/golang-china/gopl-zh)
+
 ### 目录结构定义
 ```bash
 ├── controler 控制器
