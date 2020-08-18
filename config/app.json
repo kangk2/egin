@@ -13,6 +13,11 @@
             "port": 3306,
             "user": "root",
             "passwd": "root",
+            "database": "hyperf_admin",
+            "pool": {
+                "maxOpenConns": 100,
+                "maxIdleConns": 20
+            },
             "options": {}
         }
     }

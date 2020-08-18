@@ -1,7 +1,7 @@
 package pkg
 
 import (
-    "fmt"
+    "github.com/daodao97/egin/pkg/db"
     "github.com/daodao97/egin/pkg/middleware"
     "github.com/daodao97/egin/pkg/utils"
     "github.com/gin-gonic/gin"
@@ -14,12 +14,12 @@ type Bootstrap struct {
 }
 
 func (boot *Bootstrap) Start() {
+    db.InitDb()
     gin.SetMode(utils.Config.Mode)
     gin.DefaultWriter = ginLogger()
     r := gin.Default()
     r.Use(middleware.HttpLog())
     RegRoutes(r, boot.RouteMap)
-    fmt.Println(utils.Config)
     err := r.Run(utils.Config.Address)
     if err != nil {
         return

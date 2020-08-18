@@ -21,11 +21,17 @@ type ConfigStruct struct {
 }
 
 type Database struct {
-Host    string
-Port    int
-User    string
-Passwd  string
-Options map[string]string
+    Host     string
+    Port     int
+    User     string
+    Passwd   string
+    Database string
+    Driver   string
+    Options  map[string]string
+    Pool     struct {
+        MaxOpenConns int
+        MaxIdleConns int
+    }
 }
 
 type Databases map[string]Database

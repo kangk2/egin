@@ -15,7 +15,7 @@ var UserModel db.BaseModel
 func init() {
     entity := UserEntity{}
     UserModel = db.BaseModel{
-        Database: "hyperf_admin",
+        Connection: "default",
         Table:    "user",
         Entity:   entity,
     }

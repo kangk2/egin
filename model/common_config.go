@@ -14,7 +14,7 @@ var ConfigModel db.BaseModel
 func init() {
     entity := CommonConfigEntity{}
     ConfigModel = db.BaseModel{
-        Database: "hyperf_admin",
+        Connection: "default",
         Table:    "common_config",
         Entity:   entity,
     }
