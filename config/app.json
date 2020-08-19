@@ -16,7 +16,7 @@
             "database": "hyperf_admin",
             "pool": {
                 "maxOpenConns": 100,
-                "maxIdleConns": 20
+                "maxIdleConns": 50
             },
             "options": {}
         }

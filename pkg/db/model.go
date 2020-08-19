@@ -3,13 +3,12 @@ package db
 import (
     "fmt"
     "github.com/daodao97/egin/pkg/utils"
+    "github.com/davecgh/go-spew/spew"
     "github.com/jinzhu/gorm"
-    _ "github.com/jinzhu/gorm/dialects/mysql"
     "reflect"
 )
 
 type Model struct {
-    gorm.Model
 }
 
 type BaseModel struct {
@@ -46,21 +45,21 @@ func getDBInPool(key string) (*gorm.DB, bool) {
     return val.(*gorm.DB), ok
 }
 
-func (m *BaseModel) Get(filter ...Filter) interface{} {
+func (m *BaseModel) Get(filter Filter, attr Attr) interface{} {
     if m.db == nil {
         m.init()
     }
-    var count int
-    m.db.Count(&count)
 
     // result := reflect.New(reflect.TypeOf(m.Entity)).Interface()
 
     sliceType := reflect.SliceOf(reflect.TypeOf(m.Entity))
     result := reflect.New(sliceType).Interface()
 
-    m.db.Model(m.Entity).Where("id > ?", 0).Scan(result)
+    sql := fmt.Sprintf(SelectSql(filter, attr), m.Table)
+    spew.Dump(sql)
+    db := m.db.Raw(sql)
+    db.Scan(result)
 
-    // defer m.db.Close()
     return result
 }
 

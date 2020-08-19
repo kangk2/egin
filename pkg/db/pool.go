@@ -4,6 +4,7 @@ import (
     "fmt"
     "github.com/daodao97/egin/pkg/utils"
     "github.com/jinzhu/gorm"
+    _ "github.com/jinzhu/gorm/dialects/mysql"
     "sync"
 )
 
@@ -52,6 +53,8 @@ func makeDb(conf utils.Database) *gorm.DB {
         MaxIdleConns = conf.Pool.MaxIdleConns
     }
     db.DB().SetMaxIdleConns(MaxIdleConns)
-    db.Debug()
+    if utils.Config.Mode == "debug" {
+        db.LogMode(true)
+    }
     return db
 }
