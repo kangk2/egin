@@ -1,7 +1,11 @@
 {
     "address": "127.0.0.1:8080",
     "mode": "<GIN_MODE>",
-    "custom": [1,2,3],
+    "custom": [
+        1,
+        2,
+        3
+    ],
     "logger": {
         "type": "stdout",
         "fileName": "tmp/app.log",
@@ -15,8 +19,8 @@
             "passwd": "root",
             "database": "hyperf_admin",
             "pool": {
-                "maxOpenConns": 100,
-                "maxIdleConns": 50
+                "maxOpenConns": 10,
+                "maxIdleConns": 5
             },
             "options": {}
         }

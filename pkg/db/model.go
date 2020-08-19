@@ -1,25 +1,27 @@
 package db
 
 import (
+    "database/sql"
     "fmt"
     "github.com/daodao97/egin/pkg/utils"
-    "github.com/davecgh/go-spew/spew"
-    "github.com/jinzhu/gorm"
-    "reflect"
+    "strings"
+    "time"
 )
-
-type Model struct {
-}
 
 type BaseModel struct {
     Driver     string
     Table      string
     Connection string
-    db         *gorm.DB
+    db         *sql.DB
     Entity     interface{}
+    LastSql    string
+    ready      bool
 }
 
-func (m *BaseModel) init() {
+func (m *BaseModel) init() bool {
+    if m.ready {
+        return true
+    }
     if m.Driver == "" {
         m.Driver = "mysql"
     }
@@ -37,44 +39,94 @@ func (m *BaseModel) init() {
     if !ok {
         panic("not found db conn")
     }
-    m.db = db.Table(m.Table)
+    m.db = db
+    m.ready = true
+    return true
 }
 
-func getDBInPool(key string) (*gorm.DB, bool) {
+func getDBInPool(key string) (*sql.DB, bool) {
     val, ok := pool.Load(key)
-    return val.(*gorm.DB), ok
+    return val.(*sql.DB), ok
 }
 
-func (m *BaseModel) Get(filter Filter, attr Attr) interface{} {
-    if m.db == nil {
-        m.init()
+func (m *BaseModel) Get(filter Filter, attr Attr) ([]map[string]string, error) {
+    m.init()
+
+    var args []interface{}
+
+    sqlField := AttrToSelectQuery(attr)
+    sqlWhere, args1 := FilterToQuery(filter)
+    sqlAttr, args2 := AttrToQuery(attr)
+
+    _sql := strings.Trim(fmt.Sprintf("select %s from %s %s %s", sqlField, m.Table, sqlWhere, sqlAttr), " ")
+
+    logger().Info(_sql)
+
+    args = append(args1, args2...)
+
+    return Query(m.db, _sql, args...)
+}
+
+func (m *BaseModel) Insert(record Record) (int64, error) {
+    m.init()
+    sqlInsert, args := InsertRecodeToQuery(record)
+
+    _sql := fmt.Sprintf(sqlInsert, m.Table)
+
+    stmt, err := Prepare(m.db, _sql)
+
+    logger := logger().Channel("mysql")
+    if err != nil {
+        logger.Error(err)
+        return 0, err
     }
 
-    // result := reflect.New(reflect.TypeOf(m.Entity)).Interface()
+    res, err := stmt.Exec(args...)
+    if err != nil {
+        logger.Error(err)
+        return 0, err
+    }
 
-    sliceType := reflect.SliceOf(reflect.TypeOf(m.Entity))
-    result := reflect.New(sliceType).Interface()
+    lastId, err := res.LastInsertId()
+    if err != nil {
+        logger.Error(err)
+        return 0, err
+    }
 
-    sql := fmt.Sprintf(SelectSql(filter, attr), m.Table)
-    spew.Dump(sql)
-    db := m.db.Raw(sql)
-    db.Scan(result)
+    return lastId, nil
+}
 
+func (m *BaseModel) Update(entity map[string]interface{}) {}
+
+func (m *BaseModel) Del() {}
+
+func (m *BaseModel) Exec(sql string, result interface{}) interface{} {
+    m.init()
+    defer timeCost()(m)
+    m.LastSql = sql
     return result
 }
 
-func (m *BaseModel) Insert() {
-
-}
-
-func (m *BaseModel) Update() {
-
-}
-
-func (m *BaseModel) Del() {
-
+func (m *BaseModel) DB() *sql.DB {
+    m.init()
+    return m.db
 }
 
 func logger() utils.LoggerInstance {
     return utils.Logger.Channel("mysql")
+}
+
+func timeCost() func(m *BaseModel) {
+    start := time.Now()
+    return func(m *BaseModel) {
+        tc := time.Since(start)
+        logger().Info(
+            fmt.Sprintf("use time %v", tc),
+            map[string]interface{}{
+                "table":      m.Table,
+                "connection": m.Connection,
+                "sql":        m.LastSql,
+                "ums ":       fmt.Sprintf("%v", tc),
+            })
+    }
 }

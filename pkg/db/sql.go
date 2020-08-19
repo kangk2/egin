@@ -3,7 +3,7 @@ package db
 import (
     "fmt"
     "github.com/daodao97/egin/pkg/lib"
-    "strconv"
+    "github.com/davecgh/go-spew/spew"
     "strings"
 )
 
@@ -22,41 +22,32 @@ type Record map[string]interface{}
 
 type Records map[int]Record
 
-// INSERT INTO products (name, code) VALUES ("name", "code")
-func InsertSql(record Record) {
-
-}
-
-func InsertMultiSql(records Records) {
-
-}
-
-func updateSql(filter Filter, up Record) {
-
-}
-
-func deleteSql(filter Filter) {
-
-}
-
-func SelectSql(filter Filter, attr Attr) string {
-    _fields := "*"
-    if len(attr.Select) != 0 {
-        _fields = fmt.Sprintf("`%s`", strings.Join(attr.Select, "`,`"))
+func InsertRecodeToQuery(record Record) (string, []interface{}) {
+    var fields []string
+    var value []string
+    var args []interface{}
+    for k, v := range record {
+        fields = append(fields, k)
+        value = append(value, "?")
+        args = append(args, v)
     }
-    _where := ""
-    if len(filter) != 0 {
-        _where = fmt.Sprintf("where %s", FilterToQuery(filter))
-    }
-    _attr := AttrToQuery(attr)
 
-    sql := fmt.Sprintf("select %s from %s %s %s;", _fields, "%s", _where, _attr)
+    _sql := fmt.Sprintf(
+        "insert into %s (%s) values (%s)",
+        "%s",
+        fmt.Sprintf("`%s`", strings.Join(fields, "`,`")),
+        fmt.Sprintf("%s", strings.Join(value, ",")),
+    )
 
-    return sql
+    return _sql, args
 }
 
-func FilterToQuery(filter Filter) string {
+func FilterToQuery(filter Filter) (string, []interface{}) {
     var sql string
+    var args []interface{}
+    if len(filter) == 0 {
+        return sql, args
+    }
     logic := filter["__logic"]
     if logic == nil {
         logic = "and"
@@ -65,57 +56,66 @@ func FilterToQuery(filter Filter) string {
 
     for k, v := range filter {
         switch v.(type) {
-        case []int:
-            op := make([]string, 0)
-            for _, val := range v.([]int) {
-                op = append(op, strconv.Itoa(int(val)))
+        case []int, []string:
+            length := len(v.([]interface{}))
+            pl := make([]string, length)
+            for _, val := range v.([]interface{}) {
+                args = append(args, val)
             }
-            scopes = append(scopes, fmt.Sprintf("`%s` in (%s)", k, strings.Join(op, ",")))
-        case []string:
-            op := make([]string, 0)
-            op = v.([]string)
-            scopes = append(scopes, fmt.Sprintf("`%s` in ('%s')", k, EscapeSingleQuote(strings.Join(op, "','"))))
-        case int32, int64, string, bool:
-            scopes = append(scopes, fmt.Sprintf("`%s` = '%s'", k, EscapeSingleQuote(v.(string))))
+            scopes = append(scopes, fmt.Sprintf("`%s` in (%s)", k, strings.Join(pl, ",")))
         case map[string]string:
             var _scope []string
             var _logic string = "and"
             for op, val := range v.(map[string]string) {
                 _, found := lib.Find([]string{">", ">=", "<", "<=", "=", "<>", "!="}, op)
                 if found {
-                    _scope = append(_scope, fmt.Sprintf("`%s` %s '%s'", k, op, EscapeSingleQuote(val)))
+                    _scope = append(_scope, fmt.Sprintf("`%s` %s ?", k, op))
                 }
                 if op == "__logic" {
                     _logic = val
                 }
+                args = append(args, val)
             }
-            fmt.Println(_scope)
             scopes = append(scopes, fmt.Sprintf("(%s)", strings.Join(_scope, fmt.Sprintf(" %s ", _logic))))
+        default:
+            args = append(args, v)
+            scopes = append(scopes, fmt.Sprintf("`%s` = ?", k))
         }
     }
-    sql = strings.Join(scopes, fmt.Sprintf(" %s ", logic.(string)))
-    return sql
+    spew.Dump(scopes, args)
+    sql = fmt.Sprintf("where %s", strings.Join(scopes, fmt.Sprintf(" %s ", logic.(string))))
+    return sql, args
 }
 
-func AttrToQuery(attr Attr) string {
+func AttrToQuery(attr Attr) (string, []interface{}) {
     var sql string
     var scopes []string
+    var args []interface{}
     if attr.Offset != 0 {
-        scopes = append(scopes, fmt.Sprintf("offset %d", attr.Offset))
+        args = append(args, attr.Offset)
+        scopes = append(scopes, "offset ?")
     }
     if attr.Limit != 0 {
-        scopes = append(scopes, fmt.Sprintf("limit %d", attr.Limit))
+        args = append(args, attr.Limit)
+        scopes = append(scopes, "limit ?")
     }
     if attr.OrderBy != "" {
-        scopes = append(scopes, fmt.Sprintf("order by %s", attr.OrderBy))
+        args = append(args, attr.OrderBy)
+
+        scopes = append(scopes, "order by ?")
     }
     if attr.GroupBy != "" {
-        scopes = append(scopes, fmt.Sprintf("group by %s", attr.GroupBy))
+        args = append(args, attr.GroupBy)
+
+        scopes = append(scopes, "group by ?")
     }
     sql = strings.Join(scopes, " ")
-    return sql
+    return sql, args
 }
 
-func EscapeSingleQuote(str string) string {
-    return strings.Replace(str, "'", "\\'", -1)
+func AttrToSelectQuery(attr Attr) string {
+    if len(attr.Select) == 0 {
+        return "*"
+    }
+    return fmt.Sprintf("`%s`", strings.Join(attr.Select, "`,`"))
 }

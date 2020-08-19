@@ -9,19 +9,20 @@ import (
 )
 
 // 反射调用结构体方法
-func Invoke(any interface{}, name string, args ...interface{}) (reflect.Value, error) {
+func Invoke(any interface{}, name string, args ...interface{}) ([]reflect.Value, error) {
     method := reflect.ValueOf(any).MethodByName(name)
+    var _result []reflect.Value
     notExist := method == reflect.Value{}
     if notExist {
-        return reflect.ValueOf(nil), fmt.Errorf("Method %s not found ", name)
+        return _result, fmt.Errorf("Method %s not found ", name)
     }
     methodType := method.Type()
     numIn := methodType.NumIn()
     if numIn > len(args) {
-        return reflect.ValueOf(nil), fmt.Errorf("Method %s must have minimum %d params. Have %d ", name, numIn, len(args))
+        return _result, fmt.Errorf("Method %s must have minimum %d params. Have %d ", name, numIn, len(args))
     }
     if numIn != len(args) && !methodType.IsVariadic() {
-        return reflect.ValueOf(nil), fmt.Errorf("Method %s must have %d params. Have %d ", name, numIn, len(args))
+        return _result, fmt.Errorf("Method %s must have %d params. Have %d ", name, numIn, len(args))
     }
     in := make([]reflect.Value, len(args))
     for i := 0; i < len(args); i++ {
@@ -33,16 +34,16 @@ func Invoke(any interface{}, name string, args ...interface{}) (reflect.Value, e
         }
         argValue := reflect.ValueOf(args[i])
         if !argValue.IsValid() {
-            return reflect.ValueOf(nil), fmt.Errorf("Method %s. Param[%d] must be %s. Have %s ", name, i, inType, argValue.String())
+            return _result, fmt.Errorf("Method %s. Param[%d] must be %s. Have %s ", name, i, inType, argValue.String())
         }
         argType := argValue.Type()
         if argType.ConvertibleTo(inType) {
             in[i] = argValue.Convert(inType)
         } else {
-            return reflect.ValueOf(nil), fmt.Errorf("Method %s. Param[%d] must be %s. Have %s ", name, i, inType, argType)
+            return _result, fmt.Errorf("Method %s. Param[%d] must be %s. Have %s ", name, i, inType, argType)
         }
     }
-    return method.Call(in)[0], nil
+    return method.Call(in), nil
 }
 
 // 获取结构体中字段的名称

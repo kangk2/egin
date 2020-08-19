@@ -1,7 +1,8 @@
-package pkg
+package utils
 
 import (
     "fmt"
+    "github.com/daodao97/egin/pkg/consts"
     "github.com/daodao97/egin/pkg/lib"
     "github.com/gin-gonic/gin"
     "strings"
@@ -9,15 +10,28 @@ import (
 
 func handle(api interface{}, methodName string) func(c *gin.Context) {
     return func(c *gin.Context) {
-        val, err := lib.Invoke(api, methodName, c)
+        vals, err := lib.Invoke(api, methodName, c)
         if err != nil {
             fmt.Println(err)
             return
         }
 
-        c.JSON(200, gin.H{
-            "payload": val.Interface(),
-        })
+        code := vals[2].Interface()
+        response := gin.H{
+            "code":    code,
+            "payload": vals[0].Interface(),
+        }
+
+        message := vals[1].Interface()
+        if message != nil {
+            if Config.Mode != "release" {
+                response["message"] = vals[1].Interface()
+            } else {
+                response["message"] = consts.MessageMap[code.(int)]
+            }
+        }
+
+        c.JSON(200, response)
     }
 }
 

@@ -10,7 +10,7 @@ import (
 )
 
 type Bootstrap struct {
-    RouteMap RouteMap
+    RouteMap utils.RouteMap
 }
 
 func (boot *Bootstrap) Start() {
@@ -19,7 +19,7 @@ func (boot *Bootstrap) Start() {
     gin.DefaultWriter = ginLogger()
     r := gin.Default()
     r.Use(middleware.HttpLog())
-    RegRoutes(r, boot.RouteMap)
+    utils.RegRoutes(r, boot.RouteMap)
     err := r.Run(utils.Config.Address)
     if err != nil {
         return

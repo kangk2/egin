@@ -20,11 +20,19 @@ func (l LoggerInstance) Channel(channel string) LoggerInstance {
     l._channel = channel
     return l
 }
+
 func (l LoggerInstance) Info(message interface{}, content ...interface{}) {
     logrusInstance.WithFields(logrus.Fields{
         "content": content,
         "channel": l._channel,
     }).Info(message)
+}
+
+func (l LoggerInstance) Error(message interface{}, content ...interface{}) {
+    logrusInstance.WithFields(logrus.Fields{
+        "content": content,
+        "channel": l._channel,
+    }).Error(message)
 }
 
 func init() {
@@ -93,6 +101,7 @@ func fileLogger() *logrus.Logger {
     return logger
 }
 
+// TODO
 func esLogger() {}
 
 func mongoLogger() {}
