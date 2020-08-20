@@ -105,6 +105,7 @@
 - [Spew变量打印](https://github.com/davecgh/go-spew)
 - [fresh项目热重启](https://github.com/gravityblast/fresh)
 - [logrus日志](https://juejin.im/post/6844904061393698823)
+- [如何避免用动态语言的思维写Go代码](https://juejin.im/post/6861048173989724173)
 
 ### 常用命令
 
