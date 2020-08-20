@@ -15,6 +15,8 @@ func init() {
     InitDb()
 }
 
+// 系统启动时, 初始化所有连接的 db
+// 注意此时, database/sql 此时并不会产生任何mysql连接, 连接将会在使用时创建
 func InitDb() {
     dbConf := utils.Config.Database
     for _, conf := range dbConf {
@@ -24,6 +26,7 @@ func InitDb() {
     }
 }
 
+// 生成 原生 DB 对象
 func makeDb(conf utils.Database) *sql.DB {
     server := fmt.Sprintf("%s:%d", conf.Host, conf.Port)
     dsn := fmt.Sprintf("%s:%s@(%s)/%s?charset=utf8&parseTime=True&loc=Local", conf.User, conf.Passwd, server, conf.Database)
@@ -58,8 +61,34 @@ func makeDb(conf utils.Database) *sql.DB {
     return db
 }
 
-func Prepare(db *sql.DB, _sql string) (*sql.Stmt, error) {
-    return db.Prepare(_sql)
+func Exec(db *sql.DB, _sql string, args ...interface{}) (int64, int64, error) {
+    stmt, err := db.Prepare(_sql)
+
+    logger := logger().Channel("mysql")
+    if err != nil {
+        logger.Error(err)
+        return 0, 0, err
+    }
+
+    res, err := stmt.Exec(args...)
+    if err != nil {
+        logger.Error(err)
+        return 0, 0, err
+    }
+
+    lastId, err := res.LastInsertId()
+    if err != nil {
+        logger.Error(err)
+        return 0, 0, err
+    }
+
+    affected, err := res.RowsAffected()
+    if err != nil {
+        logger.Error(err)
+        return 0, 0, err
+    }
+
+    return lastId, affected, nil
 }
 
 func Query(db *sql.DB, _sql string, args ...interface{}) ([]map[string]string, error) {
@@ -78,10 +107,12 @@ func Query(db *sql.DB, _sql string, args ...interface{}) ([]map[string]string, e
         return result, err
     }
 
-    // TODO 字段类型转换
     return Rows2SliceMap(rows), nil
 }
 
+// 将 sql.Rows 的结果转换为 map
+// 注意这里所有的value 均为string
+// TODO 是否可以根据 rows.ColumnTypes() databasesType 做类型转换?
 func Rows2SliceMap(rows *sql.Rows) (list []map[string]string) {
     // 字段名称
     columns, _ := rows.Columns()

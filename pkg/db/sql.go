@@ -6,6 +6,8 @@ import (
     "strings"
 )
 
+// sql 片段的构造
+
 type Filter map[string]interface{}
 
 type Attr struct {
@@ -21,7 +23,10 @@ type Record map[string]interface{}
 
 type Records map[int]Record
 
-func InsertRecodeToQuery(record Record) (string, []interface{}) {
+//record {"field":"val", "field2":"val2"}
+//return arg1: (`field`, `field2`) values (?, ?)
+//return arg2: ["val", "val2"]
+func InsertRecordToQuery(record Record) (string, []interface{}) {
     var fields []string
     var value []string
     var args []interface{}
@@ -32,8 +37,7 @@ func InsertRecodeToQuery(record Record) (string, []interface{}) {
     }
 
     _sql := fmt.Sprintf(
-        "insert into %s (%s) values (%s)",
-        "%s",
+        "(%s) values (%s)",
         fmt.Sprintf("`%s`", strings.Join(fields, "`,`")),
         fmt.Sprintf("%s", strings.Join(value, ",")),
     )
@@ -41,6 +45,22 @@ func InsertRecodeToQuery(record Record) (string, []interface{}) {
     return _sql, args
 }
 
+//record {"field":"val", "field2":"val2"}
+//return arg1: set `field` = ?, `field2` = ?
+//return arg2: ["val", "val2"]
+func UpdateRecordToQuery(record Record) (string, []interface{}) {
+    var scopes []string
+    var args []interface{}
+    for k, v := range record {
+        scopes = append(scopes, fmt.Sprintf("`%s` = ?", k))
+        args = append(args, v)
+    }
+    return strings.Join(scopes, ", "), args
+}
+
+//field {"field":"val", "field2":{in:[1,3]}}
+//return arg1: where `field` = ? and `field2` in (?, ?)
+//return arg2: ["val", "val2"]
 func FilterToQuery(filter Filter) (string, []interface{}) {
     var sql string
     var args []interface{}
@@ -85,6 +105,9 @@ func FilterToQuery(filter Filter) (string, []interface{}) {
     return sql, args
 }
 
+// attr: {OrderBy:"id desc",Limit: 1}
+// return arg1: order by ? limit ?
+// return arg2: ["id desc", 1]
 func AttrToQuery(attr Attr) (string, []interface{}) {
     var sql string
     var scopes []string
@@ -111,6 +134,8 @@ func AttrToQuery(attr Attr) (string, []interface{}) {
     return sql, args
 }
 
+// attr: {Select:[id,name]}
+// return arg: `id`, `name`
 func AttrToSelectQuery(attr Attr) string {
     if len(attr.Select) == 0 {
         return "*"

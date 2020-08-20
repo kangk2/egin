@@ -16,14 +16,14 @@ func TestAttrToQuery(t *testing.T) {
         want1 []interface{}
     }{
         {
-            name: "attr",
+            name: "Attr转换",
             args: args{
                 attr: Attr{
                     OrderBy: "id desc",
                 },
             },
-            want:  "order by id desc",
-            want1: []interface{}{},
+            want:  "order by ?",
+            want1: []interface{}{"id desc"},
         },
     }
     for _, tt := range tests {
@@ -56,7 +56,7 @@ func TestFilterToQuery(t *testing.T) {
                     "name": "daodao",
                 },
             },
-            want:  "where name = ?",
+            want:  "where `name` = ?",
             want1: []interface{}{"daodao"},
         },
     }
@@ -73,7 +73,7 @@ func TestFilterToQuery(t *testing.T) {
     }
 }
 
-func TestInsertRecodeToQuery(t *testing.T) {
+func TestInsertRecordToQuery(t *testing.T) {
     type args struct {
         record Record
     }
@@ -84,24 +84,24 @@ func TestInsertRecodeToQuery(t *testing.T) {
         want1 []interface{}
     }{
         {
-            name: "where转换",
+            name: "Insert转换",
             args: args{
                 record: Record{
                     "name": "daodao",
                 },
             },
-            want:  "name = ?",
+            want:  "insert into %s (`name`) values (?)",
             want1: []interface{}{"daodao"},
         },
     }
     for _, tt := range tests {
         t.Run(tt.name, func(t *testing.T) {
-            got, got1 := InsertRecodeToQuery(tt.args.record)
+            got, got1 := InsertRecordToQuery(tt.args.record)
             if got != tt.want {
-                t.Errorf("InsertRecodeToQuery() got = %v, want %v", got, tt.want)
+                t.Errorf("InsertRecordToQuery() got = %v, want %v", got, tt.want)
             }
             if !reflect.DeepEqual(got1, tt.want1) {
-                t.Errorf("InsertRecodeToQuery() got1 = %v, want %v", got1, tt.want1)
+                t.Errorf("InsertRecordToQuery() got1 = %v, want %v", got1, tt.want1)
             }
         })
     }

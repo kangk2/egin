@@ -46,19 +46,25 @@ type LoggerStruct struct {
 
 var Config ConfigStruct
 
+var defaultConfig = "{\"address\":\"127.0.0.1:8080\",\"mode\":\"debug\",\"custom\":[1,2,3],\"logger\":{\"type\":\"stdout\",\"fileName\":\"tmp/app.log\",\"level\":5},\"database\":{\"default\":{\"host\":\"localhost\",\"port\":3306,\"user\":\"root\",\"passwd\":\"root\",\"database\":\"hyperf_admin\",\"pool\":{\"maxOpenConns\":10,\"maxIdleConns\":5},\"options\":{}}}}"
+
 func init() {
     if err := godotenv.Load(".env"); err != nil {
         log.Printf("load .env fail: %s", err)
     }
 
-    data, err := ioutil.ReadFile("./config/app.json")
+    // TODO 支持命令行参数
+    data, err := ioutil.ReadFile("app.json")
 
     if err != nil {
-        log.Printf("load config/app.json fail: %s", err)
-        os.Exit(2)
+        log.Printf("load app.json fail: %s, will use default config", err)
     }
 
     str := string(data)
+
+    if str == "" {
+        str = defaultConfig
+    }
 
     re, _ := regexp.Compile("<.*>")
 
