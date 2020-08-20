@@ -4,6 +4,7 @@ import (
     "fmt"
     "log"
     "reflect"
+    "strconv"
     "strings"
     "sync"
 )
@@ -94,61 +95,6 @@ func GetStructTags(structName interface{}) map[string]map[string]string {
     return result
 }
 
-// 通过反射, 将map中的val更新到struct对应的field中
-func UpdateStructByMap(structName interface{}, defaultVal map[string]interface{}) {
-    t := reflect.TypeOf(structName)
-    if t.Kind() == reflect.Ptr {
-        t = t.Elem()
-    }
-    if t.Kind() != reflect.Struct {
-        log.Println("Check type error not Struct")
-        return
-    }
-
-    ps := reflect.ValueOf(structName)
-    // struct
-    s := ps.Elem()
-
-    for k, v := range defaultVal {
-        f := s.FieldByName(k)
-        if f.IsValid() {
-            if f.CanSet() {
-                switch f.Kind() {
-                case reflect.Int:
-                    x := v.(int64)
-                    if !f.OverflowInt(x) {
-                        f.SetInt(x)
-                    }
-                case reflect.String:
-                    f.SetString(v.(string))
-                }
-            }
-        }
-    }
-}
-
-func CompareDefaultTag(any interface{}) {
-    t := reflect.TypeOf(any)
-    if t.Kind() == reflect.Ptr {
-        t = t.Elem()
-    }
-    if t.Kind() != reflect.Struct {
-        log.Println("Check type error not Struct")
-        return
-    }
-    fields := GetStructFieldsName(any)
-    tags := GetStructTags(any)
-    defaultVal := make(map[string]interface{})
-    for i := range fields {
-        fieldName := fields[i]
-        if fieldDefaultVal, hasKey := tags[fieldName]["default"]; hasKey {
-            defaultVal[fieldName] = fieldDefaultVal
-        }
-    }
-    UpdateStructByMap(any, defaultVal)
-    fmt.Println(any)
-}
-
 func WaitGo(number int, fu func()) {
     var wg sync.WaitGroup
     for i := 0; i < 1000; i++ {
@@ -167,4 +113,52 @@ func Find(slice []string, val string) (int, bool) {
         }
     }
     return -1, false
+}
+
+func UpdateStructByTagMap(result interface{}, tagName string, tagMap map[string]interface{}) error {
+    t := reflect.TypeOf(result)
+    if t.Kind() != reflect.Ptr {
+        return fmt.Errorf("result have to be a pointer")
+    }
+    if t.Kind() != reflect.Struct {
+        return fmt.Errorf("result pointer not struct")
+    }
+    v := reflect.ValueOf(result).Elem()
+    fieldNum := v.NumField()
+    for i := 0; i < fieldNum; i++ {
+        fieldInfo := v.Type().Field(i)
+        tag := fieldInfo.Tag.Get(tagName)
+        if tag == "" {
+            continue
+        }
+        f := v.FieldByName(fieldInfo.Name)
+        if !f.IsValid() || !f.CanSet() {
+            continue
+        }
+        value, ok := tagMap[tag]
+        if !ok {
+            continue
+        }
+
+        valueRealType := reflect.TypeOf(value).Kind()
+        targetType := f.Kind()
+        if valueRealType == targetType {
+            f.Set(reflect.ValueOf(value))
+            continue
+        }
+        expr := fmt.Sprintf("%s-to-%s", valueRealType, targetType)
+        switch expr {
+        case "int-to-string":
+            f.SetString(strconv.Itoa(value.(int)))
+        case "string-to-string":
+            f.SetString(value.(string))
+        case "string-to-int":
+            _v, _ := strconv.Atoi(value.(string))
+            f.SetInt(int64(_v))
+        case "float64-to-int":
+            f.SetInt(int64(value.(float64)))
+            // TODO more case
+        }
+    }
+    return nil
 }

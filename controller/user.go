@@ -20,7 +20,7 @@ func (u User) Get(c *gin.Context) (interface{}, error, int) {
     result, err := user.Get(db.Filter{
         "id": 1,
     }, db.Attr{
-        Select: []string{"realname", "id"},
+        Select: []string{"realname", "id", "username", "password"},
     })
     // config := model.ConfigModel
     // result["config"] = config.Get()
