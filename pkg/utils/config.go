@@ -19,6 +19,12 @@ type ConfigStruct struct {
     Redis    interface{}
     Logger   LoggerStruct
     Lan      string
+    Auth struct{
+        IpAuth struct{
+            Enable bool
+            AllowedIpList []string
+        }
+    }
 }
 
 type Database struct {

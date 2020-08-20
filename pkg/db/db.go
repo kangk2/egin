@@ -149,8 +149,6 @@ func Query(db *sql.DB, _sql string, args ...interface{}) ([]map[string]string, e
 
     stmt, err := db.Prepare(_sql)
 
-    fmt.Println("cccccCcccccc", _sql, args)
-
     if err != nil {
         logger().Error("db.query.prepare fail", map[string]interface{}{
             "sql":  _sql,
@@ -198,7 +196,6 @@ func Rows2SliceMap(rows *sql.Rows) (list []map[string]string, err error) {
         for i := 0; i < length; i++ {
             row[columns[i]] = string(values[i])
         }
-        fmt.Println("rooooooooooo", row)
         list = append(list, row)
     }
     if err := rows.Err(); err != nil {

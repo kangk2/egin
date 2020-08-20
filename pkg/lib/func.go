@@ -148,7 +148,6 @@ func UpdateStructByTagMap(result interface{}, tagName string, tagMap map[string]
             continue
         }
         expr := fmt.Sprintf("%s-to-%s", valueRealType, targetType)
-        fmt.Println("expr:", expr)
         switch expr {
         case "int-to-string":
             f.SetString(strconv.Itoa(value.(int)))

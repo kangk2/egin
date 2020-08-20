@@ -2,7 +2,6 @@ package pkg
 
 import (
     "github.com/daodao97/egin/pkg/db"
-    "github.com/daodao97/egin/pkg/middleware"
     "github.com/daodao97/egin/pkg/route"
     "github.com/daodao97/egin/pkg/utils"
     "github.com/gin-gonic/gin"
@@ -11,7 +10,8 @@ import (
 )
 
 type Bootstrap struct {
-    RouteMap route.RouteMap
+    HttpMiddlewares []func() gin.HandlerFunc
+    RouteMap        route.RouteMap
 }
 
 func (boot *Bootstrap) Start() {
@@ -19,7 +19,9 @@ func (boot *Bootstrap) Start() {
     gin.SetMode(utils.Config.Mode)
     gin.DefaultWriter = ginLogger()
     r := gin.Default()
-    r.Use(middleware.HttpLog())
+    for _, midFunc := range boot.HttpMiddlewares {
+        r.Use(midFunc())
+    }
     route.RegRoutes(r, boot.RouteMap)
     err := r.Run(utils.Config.Address)
     if err != nil {
