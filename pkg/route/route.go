@@ -1,9 +1,10 @@
-package utils
+package route
 
 import (
     "fmt"
     "github.com/daodao97/egin/pkg/consts"
     "github.com/daodao97/egin/pkg/lib"
+    "github.com/daodao97/egin/pkg/utils"
     "github.com/gin-gonic/gin"
     "strings"
 )
@@ -16,7 +17,7 @@ func handle(api interface{}, methodName string) func(c *gin.Context) {
             return
         }
 
-        code := vals[2].Interface()
+        code := vals[2].Interface().(consts.ErrCode)
         response := gin.H{
             "code":    code,
             "payload": vals[0].Interface(),
@@ -24,10 +25,10 @@ func handle(api interface{}, methodName string) func(c *gin.Context) {
 
         message := vals[1].Interface()
         if message != nil {
-            if Config.Mode != "release" {
+            if utils.Config.Mode != "release" {
                 response["message"] = vals[1].Interface()
             } else {
-                response["message"] = consts.MessageMap[code.(int)]
+                response["message"] = code.String()
             }
         }
 

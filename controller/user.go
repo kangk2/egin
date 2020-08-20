@@ -15,8 +15,8 @@ type User struct {
     BaseApi
 }
 
-func (u User) Get(c *gin.Context) (interface{}, error, int) {
-    user := model.UserModel
+func (u User) Get(c *gin.Context) (interface{}, error, consts.ErrCode) {
+    user := model.User
     result, err := user.Get(db.Filter{
         "id": 1,
     }, db.Attr{
@@ -27,14 +27,14 @@ func (u User) Get(c *gin.Context) (interface{}, error, int) {
     return result, err, 0
 }
 
-func (u User) Post(c *gin.Context) (interface{}, error, int) {
-    user := model.UserModel
+func (u User) Post(c *gin.Context) (interface{}, error, consts.ErrCode) {
+    user := model.User
     result, err := user.Insert(db.Record{
         "username": "test",
         "realname": "你好",
         "password": "cool",
     })
-    var code int
+    var code consts.ErrCode
     if err != nil {
         code = consts.ErrorSystem
     }

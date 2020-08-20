@@ -18,6 +18,7 @@ type ConfigStruct struct {
     Database Databases
     Redis    interface{}
     Logger   LoggerStruct
+    Lan      string
 }
 
 type Database struct {
@@ -47,13 +48,13 @@ var Config ConfigStruct
 
 func init() {
     if err := godotenv.Load(".env"); err != nil {
-        log.Printf("not found .env\n%s\n", err)
+        log.Printf("load .env fail: %s", err)
     }
 
     data, err := ioutil.ReadFile("./config/app.json")
 
     if err != nil {
-        log.Printf("load config/app.json fail\n%s\n", err)
+        log.Printf("load config/app.json fail: %s", err)
         os.Exit(2)
     }
 

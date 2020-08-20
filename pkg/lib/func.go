@@ -120,6 +120,7 @@ func UpdateStructByTagMap(result interface{}, tagName string, tagMap map[string]
     if t.Kind() != reflect.Ptr {
         return fmt.Errorf("result have to be a pointer")
     }
+    t = t.Elem()
     if t.Kind() != reflect.Struct {
         return fmt.Errorf("result pointer not struct")
     }
@@ -147,6 +148,7 @@ func UpdateStructByTagMap(result interface{}, tagName string, tagMap map[string]
             continue
         }
         expr := fmt.Sprintf("%s-to-%s", valueRealType, targetType)
+        fmt.Println("expr:", expr)
         switch expr {
         case "int-to-string":
             f.SetString(strconv.Itoa(value.(int)))

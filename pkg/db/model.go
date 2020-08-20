@@ -67,7 +67,7 @@ func (m *BaseModel) Get(filter Filter, attr Attr) ([]map[string]string, error) {
     return Query(m.db, _sql, args...)
 }
 
-func (m *BaseModel) Insert(record Record) (int64, error) {
+func (m BaseModel) Insert(record Record) (int64, error) {
     m.init()
     sqlInsert, args := InsertRecodeToQuery(record)
 
@@ -96,11 +96,11 @@ func (m *BaseModel) Insert(record Record) (int64, error) {
     return lastId, nil
 }
 
-func (m *BaseModel) Update(entity map[string]interface{}) {}
+func (m BaseModel) Update(entity map[string]interface{}) {}
 
-func (m *BaseModel) Del() {}
+func (m BaseModel) Del() {}
 
-func (m *BaseModel) Exec(sql string, result interface{}) interface{} {
+func (m BaseModel) Exec(sql string, result interface{}) interface{} {
     m.init()
     defer timeCost()(m)
     m.LastSql = sql
@@ -116,9 +116,9 @@ func logger() utils.LoggerInstance {
     return utils.Logger.Channel("mysql")
 }
 
-func timeCost() func(m *BaseModel) {
+func timeCost() func(m BaseModel) {
     start := time.Now()
-    return func(m *BaseModel) {
+    return func(m BaseModel) {
         tc := time.Since(start)
         logger().Info(
             fmt.Sprintf("use time %v", tc),

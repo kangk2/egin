@@ -2,13 +2,13 @@ package config
 
 import (
     "github.com/daodao97/egin/controller"
-    "github.com/daodao97/egin/pkg/utils"
+    "github.com/daodao97/egin/pkg/route"
 )
 
-func Routes() utils.RouteMap {
-    routes := utils.RouteMap{
-        "/user":       utils.Handle{Controller: &controller.User{}, Method: "Get"},
-        "POST::/user": utils.Handle{Controller: &controller.User{}, Method: "Post"},
+func Routes() route.RouteMap {
+    routes := route.RouteMap{
+        "/user":       route.Handle{Controller: &controller.User{}, Method: "Get"},
+        "POST::/user": route.Handle{Controller: &controller.User{}, Method: "Post"},
     }
     return routes
 }

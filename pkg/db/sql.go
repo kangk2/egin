@@ -3,7 +3,6 @@ package db
 import (
     "fmt"
     "github.com/daodao97/egin/pkg/lib"
-    "github.com/davecgh/go-spew/spew"
     "strings"
 )
 
@@ -82,7 +81,6 @@ func FilterToQuery(filter Filter) (string, []interface{}) {
             scopes = append(scopes, fmt.Sprintf("`%s` = ?", k))
         }
     }
-    spew.Dump(scopes, args)
     sql = fmt.Sprintf("where %s", strings.Join(scopes, fmt.Sprintf(" %s ", logic.(string))))
     return sql, args
 }
