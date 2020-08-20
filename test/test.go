@@ -11,6 +11,7 @@ import (
 var wg sync.WaitGroup
 
 func main() {
+    api()
     fmt.Println("over")
 }
 

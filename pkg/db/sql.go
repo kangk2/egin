@@ -8,6 +8,12 @@ import (
 
 // sql 片段的构造
 
+const LOGIC_STR_AND = "and"
+const LOGIC_STR_OR = "or"
+
+const LOGIC_INT_AND = 1
+const LOGIC_INT_OR = 0
+
 type Filter map[string]interface{}
 
 type Attr struct {
@@ -96,6 +102,26 @@ func FilterToQuery(filter Filter) (string, []interface{}) {
                 args = append(args, val)
             }
             scopes = append(scopes, fmt.Sprintf("(%s)", strings.Join(_scope, fmt.Sprintf(" %s ", _logic))))
+        case map[string]int:
+            var _scope []string
+            var _logic int = LOGIC_INT_AND
+            for op, val := range v.(map[string]int) {
+                _, found := lib.Find([]string{">", ">=", "<", "<=", "=", "<>", "!="}, op)
+                if found {
+                    _scope = append(_scope, fmt.Sprintf("`%s` %s ?", k, op))
+                }
+                if op == "__logic" {
+                    _logic = val
+                }
+                args = append(args, val)
+            }
+            var logicStr string
+            if _logic == LOGIC_INT_AND {
+                logicStr = "and"
+            } else {
+                logicStr = "or"
+            }
+            scopes = append(scopes, fmt.Sprintf("(%s)", strings.Join(_scope, fmt.Sprintf(" %s ", logicStr))))
         default:
             args = append(args, v)
             scopes = append(scopes, fmt.Sprintf("`%s` = ?", k))
@@ -121,14 +147,10 @@ func AttrToQuery(attr Attr) (string, []interface{}) {
         scopes = append(scopes, "limit ?")
     }
     if attr.OrderBy != "" {
-        args = append(args, attr.OrderBy)
-
-        scopes = append(scopes, "order by ?")
+        scopes = append(scopes, fmt.Sprintf("order by %s", attr.OrderBy))
     }
     if attr.GroupBy != "" {
-        args = append(args, attr.GroupBy)
-
-        scopes = append(scopes, "group by ?")
+        scopes = append(scopes, fmt.Sprintf("group by %s", attr.GroupBy))
     }
     sql = strings.Join(scopes, " ")
     return sql, args

@@ -5,7 +5,6 @@ import (
     "fmt"
     "github.com/daodao97/egin/pkg/utils"
     _ "github.com/go-sql-driver/mysql"
-    "log"
     "sync"
 )
 
@@ -61,30 +60,84 @@ func makeDb(conf utils.Database) *sql.DB {
     return db
 }
 
+// 一般用Prepared Statements和Exec()完成INSERT, UPDATE, DELETE操作
 func Exec(db *sql.DB, _sql string, args ...interface{}) (int64, int64, error) {
-    stmt, err := db.Prepare(_sql)
 
-    logger := logger().Channel("mysql")
+    tx, err := db.Begin()
     if err != nil {
-        logger.Error(err)
+        logger().Error(err)
+        return 0, 0, err
+    }
+    var flag bool
+    addr := &flag
+    defer func(flag *bool, errMsg *error) {
+        if *flag {
+            return
+        }
+        err := tx.Rollback()
+        if err != nil {
+            logger().Error(fmt.Sprintf("db.exec.rollback fail: %s", err), map[string]interface{}{
+                "sql":  _sql,
+                "args": args,
+                "msg":  errMsg,
+            })
+        } else {
+            logger().Info("db.exec.rollback", map[string]interface{}{
+                "sql":  _sql,
+                "args": args,
+                "msg":  errMsg,
+            })
+        }
+    }(addr, &err)
+
+    stmt, err := tx.Prepare(_sql)
+    if err != nil {
+        logger().Error("db.exec.prepare fail", map[string]interface{}{
+            "sql":  _sql,
+            "args": args,
+            "msg":  err,
+        })
         return 0, 0, err
     }
 
     res, err := stmt.Exec(args...)
     if err != nil {
-        logger.Error(err)
+        logger().Error("db.exec.exec fail", map[string]interface{}{
+            "sql":  _sql,
+            "args": args,
+            "msg":  err,
+        })
         return 0, 0, err
     }
 
+    err = tx.Commit()
+    if err != nil {
+        logger().Error("db.exec.commit fail", map[string]interface{}{
+            "sql":  _sql,
+            "args": args,
+            "msg":  err,
+        })
+        return 0, 0, err
+    }
+    flag = true
+
     lastId, err := res.LastInsertId()
     if err != nil {
-        logger.Error(err)
+        logger().Error("db.exec.lastId fail", map[string]interface{}{
+            "sql":  _sql,
+            "args": args,
+            "msg":  err,
+        })
         return 0, 0, err
     }
 
     affected, err := res.RowsAffected()
     if err != nil {
-        logger.Error(err)
+        logger().Error("db.exec.affected fail", map[string]interface{}{
+            "sql":  _sql,
+            "args": args,
+            "msg":  err,
+        })
         return 0, 0, err
     }
 
@@ -96,24 +149,34 @@ func Query(db *sql.DB, _sql string, args ...interface{}) ([]map[string]string, e
 
     stmt, err := db.Prepare(_sql)
 
+    fmt.Println("cccccCcccccc", _sql, args)
+
     if err != nil {
-        log.Fatal(err)
+        logger().Error("db.query.prepare fail", map[string]interface{}{
+            "sql":  _sql,
+            "args": args,
+            "msg":  err,
+        })
         return result, err
     }
 
     rows, err := stmt.Query(args...)
     if err != nil {
-        log.Fatal(err)
+        logger().Error("db.query.query fail", map[string]interface{}{
+            "sql":  _sql,
+            "args": args,
+            "msg":  err,
+        })
         return result, err
     }
 
-    return Rows2SliceMap(rows), nil
+    return Rows2SliceMap(rows)
 }
 
 // 将 sql.Rows 的结果转换为 map
 // 注意这里所有的value 均为string
 // TODO 是否可以根据 rows.ColumnTypes() databasesType 做类型转换?
-func Rows2SliceMap(rows *sql.Rows) (list []map[string]string) {
+func Rows2SliceMap(rows *sql.Rows) (list []map[string]string, err error) {
     // 字段名称
     columns, _ := rows.Columns()
     // 多少个字段
@@ -135,7 +198,11 @@ func Rows2SliceMap(rows *sql.Rows) (list []map[string]string) {
         for i := 0; i < length; i++ {
             row[columns[i]] = string(values[i])
         }
+        fmt.Println("rooooooooooo", row)
         list = append(list, row)
     }
-    return list
+    if err := rows.Err(); err != nil {
+        return list, err
+    }
+    return list, nil
 }

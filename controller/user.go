@@ -18,9 +18,12 @@ type User struct {
 func (u User) Get(c *gin.Context) (interface{}, consts.ErrCode, error) {
     user := model.User
     result, err := user.Get(db.Filter{
-        //"id": 1,
+        "id": map[string]int{
+            ">": 20,
+        },
     }, db.Attr{
-        Select: []string{"realname", "id", "username", "password"},
+        Select:  []string{"realname", "id", "username", "password"},
+        OrderBy: "id desc",
     })
     // config := model.ConfigModel
     // result["config"] = config.Get()
@@ -30,7 +33,7 @@ func (u User) Get(c *gin.Context) (interface{}, consts.ErrCode, error) {
 func (u User) Post(c *gin.Context) (interface{}, consts.ErrCode, error) {
     user := model.User
     result, _, err := user.Insert(db.Record{
-        "username": "test",
+        "username": "test33333",
         "realname": "你好",
         "password": "cool",
     })
@@ -48,7 +51,7 @@ func (u User) Put(c *gin.Context) (interface{}, consts.ErrCode, error) {
             "id": 13,
         },
         db.Record{
-            "username": "test1",
+            "username": "test12",
         })
     var code consts.ErrCode
     if err != nil {
