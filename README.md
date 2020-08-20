@@ -108,14 +108,13 @@
 
 ### 常用命令
 
+一下命令均在项目根目录执行
+
 ```bash
 go run main.go
-```
-
-```bash
 go test -v ./pkg/db
+godoc -http=:8888
+fresh
 ```
 
-```bash
-godoc -http=:8888
-```
+
