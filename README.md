@@ -2,44 +2,56 @@
 
 本项目作为`Go`入门的实践项目, 将基于`Gin`框架完成一些封装. 最终目标实现一个`配置化的`,`能够快速上手的`, `规范目录结构的`脚手架.
 
-1. Go编程基础(视频) [这里](https://study.163.com/course/courseMain.htm?courseId=306002)
-2. GOWeb基础(视频) [这里](https://study.163.com/course/courseMain.htm?courseId=328001)
-3. 入门指南(文档) [这里](https://github.com/unknwon/the-way-to-go_ZH_CN)
-4. Go语言圣经(文档) [这里](https://github.com/golang-china/gopl-zh)
+1. GO安排 [这里](https://www.jianshu.com/p/ad57228c6e6a)
+2. Go编程基础(视频) [这里](https://study.163.com/course/courseMain.htm?courseId=306002)
+3. GOWeb基础(视频) [这里](https://study.163.com/course/courseMain.htm?courseId=328001)
+4. 入门指南(文档) [这里](https://github.com/unknwon/the-way-to-go_ZH_CN)
+5. Go语言圣经(文档) [这里](https://github.com/golang-china/gopl-zh)
 
 ### 目录结构定义
 ```bash
-├── controler 控制器
-├── config 项目配置 
-├── module 数据模型
-├── pkg  基础类库
-├── main.go
+./
+├── README.md
+├── app.json 配置文件
+├── config 配置目录
+│   └── routes.go 路由配置
+├── controller 控制器
+│   └── user.go
+├── go.mod 项目依赖, 类似 php composer.json
+├── go.sum 依赖的锁定, 类似 php composer.lock
+├── main.go 入口文件, 类似 php index.php
+├── model 数据库模型
+│   └── user.go 对应数据源 user 表
+├── pkg 脚手架类库
+│   ├── bootstrap.go 
+│   ├── consts 常量
+│   │   └── code.go 系统CODE码及信息
+│   ├── db 数据库访问层
+│   │   ├── db.go db连接相关
+│   │   ├── model.go 模型 数据操作 CRUD
+│   │   ├── sql.go sql构造
+│   │   └── sql_test.go sql构造的测试文件
+│   ├── lib 统一类库
+│   │   ├── func.go
+│   │   ├── http.go
+│   │   └── string.go
+│   ├── middleware http访问的中间件
+│   │   └── logger.go
+│   ├── route 路由解析注册
+│   │   └── route.go
+│   └── utils 通用工具
+│       ├── config.go
+│       └── logger.go
+├── service 业务服务
 ```
 
 #### Go的安装 
 
 [查看](https://www.jianshu.com/p/ad57228c6e6a)
 
-#### 基础参考
-- Gin框架 [Gin](https://github.com/gin-gonic/gin) [GinDoc](https://learnku.com/docs/gin-gonic/2019)
-
-```bash
-go get -u github.com/gin-gonic/gin
-```
-
-- 更详细的变量打印 [Spew](https://github.com/davecgh/go-spew)
-
-```bash
-go get -u github.com/davecgh/go-spew/spew
-```
-
-- 实时编译, 当代码变更时自动重启服务 [fresh](https://github.com/gravityblast/fresh)
-
-```bash
-go get -u github.com/pilu/fresh
-```
-
 ### 实践
+
+我们将在一个通用脚手架的封装过程中不断学习GO语言.
 
 #### 路由的配置化注册
 
@@ -68,7 +80,7 @@ go get -u github.com/pilu/fresh
 基于单表的`CRUD`方法
 
 - [x] pkg/db/model.go 连接池 
-- [ ] pkg/db/model.go crud 方法封装 
+- [x] pkg/db/model.go crud 方法封装 
 
 ### 数据验证
 
@@ -80,4 +92,30 @@ go get -u github.com/pilu/fresh
 - [ ] AKSK
 
 ### 参考资料
-[database/sql资料](https://segmentfault.com/a/1190000003036452)
+- [database/sql资料](https://segmentfault.com/a/1190000003036452)
+- [go/tools-github](https://github.com/golang/tools)
+- [go/tools简明介绍](https://studygolang.com/articles/11837)
+- [go/test详解](http://c.biancheng.net/view/124.html)
+- [go/mod包管理](https://juejin.im/post/6844903798658301960)
+- [go/doc项目文档](https://wiki.jikexueyuan.com/project/go-command-tutorial/0.5.html)
+- [go/generate代码生成](https://juejin.im/post/6844903923166216200)
+- [gin文档](https://learnku.com/docs/gin-gonic/2019)
+- [Gin-github](https://github.com/gin-gonic/gin)
+- [gorm文档](http://gorm.io/zh_CN/docs/index.html)
+- [Spew变量打印](https://github.com/davecgh/go-spew)
+- [fresh项目热重启](https://github.com/gravityblast/fresh)
+- [logrus日志](https://juejin.im/post/6844904061393698823)
+
+### 常用命令
+
+```bash
+go run main.go
+```
+
+```bash
+go test -v ./pkg/db
+```
+
+```bash
+godoc -http=:8888
+```

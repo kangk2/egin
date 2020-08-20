@@ -3,6 +3,7 @@ package db
 import (
     "fmt"
     "github.com/daodao97/egin/pkg/lib"
+    "regexp"
     "strings"
 )
 
@@ -146,10 +147,13 @@ func AttrToQuery(attr Attr) (string, []interface{}) {
         args = append(args, attr.Limit)
         scopes = append(scopes, "limit ?")
     }
-    if attr.OrderBy != "" {
+    // https://stackoverflow.com/questions/30867337/golang-order-by-issue-with-mysql
+    // 占位符 ? 只能用在 insert 或 条件中, order by/ group by 不支持
+    valid := regexp.MustCompile("^[A-Za-z0-9_]+$")
+    if attr.OrderBy != "" && valid.MatchString(attr.OrderBy) {
         scopes = append(scopes, fmt.Sprintf("order by %s", attr.OrderBy))
     }
-    if attr.GroupBy != "" {
+    if attr.GroupBy != "" && valid.MatchString(attr.GroupBy) {
         scopes = append(scopes, fmt.Sprintf("group by %s", attr.GroupBy))
     }
     sql = strings.Join(scopes, " ")
