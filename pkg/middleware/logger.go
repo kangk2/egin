@@ -26,7 +26,7 @@ func HttpLog() gin.HandlerFunc {
         // 请求IP
         clientIP := c.ClientIP()
         // 日志格式
-        utils.Logger.Info("http end", map[string]interface{}{
+        utils.Logger.Channel("http").Info("http end", map[string]interface{}{
             "status_code":  statusCode,
             "latency_time": latencyTime,
             "client_ip":    clientIP,

@@ -1,16 +1,16 @@
 package config
 
 import (
-    "github.com/daodao97/egin/controller"
+    "github.com/daodao97/egin/config/routes"
     "github.com/daodao97/egin/pkg/route"
 )
 
-func Routes() route.RouteMap {
-    routes := route.RouteMap{
-        "/user":       route.Handle{Controller: &controller.User{}, Method: "Get"},
-        "POST::/user": route.Handle{Controller: &controller.User{}, Method: "Post"},
-        "PUT::/user": route.Handle{Controller: &controller.User{}, Method: "Put"},
-        "DELETE::/user": route.Handle{Controller: &controller.User{}, Method: "Delete"},
-    }
-    return routes
+// 由此次向外导出所有路由及路由组
+// 新增的路由必须在此注册
+var Routes = []route.RoutesMap{
+    routes.UserRoute,
+}
+
+var RoutesGroup = []route.RoutesGroup{
+    routes.UserRouteGroup,
 }

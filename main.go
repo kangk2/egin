@@ -11,7 +11,8 @@ import (
 func main() {
     boot := pkg.Bootstrap{
         HttpMiddlewares: config.HttpMiddlewares,
-        RouteMap:        config.Routes(),
+        RoutesMap:        config.Routes,
+        RoutesGroup:      config.RoutesGroup,
     }
     boot.Start()
 }

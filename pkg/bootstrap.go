@@ -11,22 +11,34 @@ import (
 
 type Bootstrap struct {
     HttpMiddlewares []func() gin.HandlerFunc
-    RouteMap        route.RouteMap
+    RoutesMap       []route.RoutesMap
+    RoutesGroup     []route.RoutesGroup
+    engine          *gin.Engine
 }
 
 func (boot *Bootstrap) Start() {
     db.InitDb()
     gin.SetMode(utils.Config.Mode)
     gin.DefaultWriter = ginLogger()
-    r := gin.Default()
-    for _, midFunc := range boot.HttpMiddlewares {
-        r.Use(midFunc())
-    }
-    route.RegRoutes(r, boot.RouteMap)
-    err := r.Run(utils.Config.Address)
+    boot.engine = gin.Default()
+    boot.regMiddlewares()
+    boot.regRoutes()
+    err := boot.engine.Run(utils.Config.Address)
     if err != nil {
         return
     }
+}
+
+func (boot *Bootstrap) regMiddlewares() {
+    for _, midFunc := range boot.HttpMiddlewares {
+        boot.engine.Use(midFunc())
+    }
+    boot.engine.Use(gin.Recovery())
+}
+
+func (boot *Bootstrap) regRoutes() {
+    route.RegRoutes(boot.engine, boot.RoutesMap)
+    route.RegRouteGroup(boot.engine, boot.RoutesGroup)
 }
 
 func ginLogger() io.Writer {
