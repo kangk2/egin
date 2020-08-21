@@ -96,6 +96,7 @@
 - [ ] AKSK
 
 ### 参考资料
+- [Goprox解决安装慢](https://goproxy.cn/)
 - [database/sql资料](https://segmentfault.com/a/1190000003036452)
 - [go/tools-github](https://github.com/golang/tools)
 - [go/tools简明介绍](https://studygolang.com/articles/11837)
@@ -108,10 +109,13 @@
 - [gorm文档](http://gorm.io/zh_CN/docs/index.html)
 - [Spew变量打印](https://github.com/davecgh/go-spew)
 - [fresh项目热重启](https://github.com/gravityblast/fresh)
+- [air热重启-推荐](https://github.com/cosmtrek/air)
 - [logrus日志](https://juejin.im/post/6844904061393698823)
 - [如何避免用动态语言的思维写Go代码](https://juejin.im/post/6861048173989724173)
 - [Gin中间件详解](https://juejin.im/post/6844903833164857358)
 - [数据验证](https://segmentfault.com/a/1190000022541905)
+- [Go 语言设计与实现](https://draveness.me/golang/docs/part1-prerequisite/ch02-compile/golang-compile-intro/)
+- [Go by Example](https://gobyexample.com/)
 
 ### 常用命令
 

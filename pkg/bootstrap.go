@@ -19,7 +19,7 @@ type Bootstrap struct {
 func (boot *Bootstrap) Start() {
     db.InitDb()
     gin.SetMode(utils.Config.Mode)
-    gin.DefaultWriter = ginLogger()
+    //gin.DefaultWriter = ginLogger()
     boot.engine = gin.Default()
     boot.regMiddlewares()
     boot.regRoutes()
