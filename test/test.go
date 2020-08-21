@@ -2,6 +2,7 @@ package main
 
 import (
     "fmt"
+    "github.com/daodao97/egin/pkg/cache"
     "github.com/daodao97/egin/pkg/lib"
     "log"
     "sync"
@@ -10,8 +11,19 @@ import (
 var wg sync.WaitGroup
 
 func main() {
-    api()
+    //api()
+    redis()
     fmt.Println("over")
+}
+
+func redis() {
+    cache.InitDb()
+
+    redis := cache.Redis{Connection: "default"}
+
+    val, err := redis.Get("key")
+
+    fmt.Println(val, err)
 }
 
 func api() {

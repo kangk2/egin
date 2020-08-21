@@ -42,14 +42,12 @@ func (m *BaseModel) init() bool {
     if m.FakeDelKey == "" {
         m.FakeDelKey = "is_deleted"
     }
-    conf, ok := utils.Config.Database[m.Connection]
+    _, ok := utils.Config.Database[m.Connection]
     if !ok {
-        panic(fmt.Sprintf("database %s not found", m.Connection))
+        logger().Error(fmt.Sprintf("database %s not found", m.Connection))
     }
 
-    key := fmt.Sprintf("%s:%d:%s", conf.Host, conf.Port, conf.Database)
-
-    db, ok := getDBInPool(key)
+    db, ok := getDBInPool(m.Connection)
     if !ok {
         panic("not found db conn")
     }

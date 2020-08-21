@@ -18,8 +18,7 @@ func init() {
 // 注意此时, database/sql 此时并不会产生任何mysql连接, 连接将会在使用时创建
 func InitDb() {
     dbConf := utils.Config.Database
-    for _, conf := range dbConf {
-        key := fmt.Sprintf("%s:%d:%s", conf.Host, conf.Port, conf.Database)
+    for key, conf := range dbConf {
         db := makeDb(conf)
         pool.Store(key, db)
     }

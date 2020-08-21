@@ -1,7 +1,10 @@
 package controller
 
 import (
+    "encoding/json"
+    "fmt"
     "github.com/daodao97/egin/model"
+    "github.com/daodao97/egin/pkg/cache"
     "github.com/daodao97/egin/pkg/consts"
     "github.com/daodao97/egin/pkg/db"
     "github.com/gin-gonic/gin"
@@ -34,9 +37,15 @@ func (u User) Get(c *gin.Context, params interface{}) (interface{}, consts.ErrCo
         Select:  []string{"realname", "id", "username", "password"},
         OrderBy: "id desc",
     })
-    // config := model.ConfigModel
-    // result["config"] = config.Get()
-    return []interface{}{result, p}, 0, err
+
+    redis := cache.Redis{Connection: "default"}
+    setV, _ := json.Marshal([]int{1, 2, 4})
+    err = redis.Set("egin:test", setV, 0)
+    fmt.Println(222222222, err)
+    _cache, err := redis.Get("egin:test")
+    fmt.Println(3333333333, err)
+
+    return []interface{}{result, p, _cache}, 0, err
 }
 
 func (u User) Post(c *gin.Context, params interface{}) (interface{}, consts.ErrCode, error) {

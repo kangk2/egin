@@ -16,7 +16,7 @@ type ConfigStruct struct {
     Mode     string
     Custom   interface{}
     Database Databases
-    Redis    interface{}
+    Redis    map[string]Redis
     Logger   LoggerStruct
     Lan      string
     Auth     struct {
@@ -48,6 +48,13 @@ type LoggerStruct struct {
     FileName  string
     Formatter string
     Level     int // 0 PanicLevel 5 InfoLevel 6 DebugLevel
+}
+
+type Redis struct {
+    Host     string
+    Port     int
+    DB       int
+    Password string
 }
 
 var Config ConfigStruct

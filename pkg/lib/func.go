@@ -1,9 +1,11 @@
 package lib
 
 import (
+    "bytes"
     "fmt"
     "log"
     "reflect"
+    "runtime"
     "strconv"
     "strings"
     "sync"
@@ -162,4 +164,14 @@ func UpdateStructByTagMap(result interface{}, tagName string, tagMap map[string]
         }
     }
     return nil
+}
+
+// 获取协程id, 十分低效, 生产环境不要使用
+func GetGID() uint64 {
+    b := make([]byte, 64)
+    b = b[:runtime.Stack(b, false)]
+    b = bytes.TrimPrefix(b, []byte("goroutine "))
+    b = b[:bytes.IndexByte(b, ' ')]
+    n, _ := strconv.ParseUint(string(b), 10, 64)
+    return n
 }

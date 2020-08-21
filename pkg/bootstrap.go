@@ -1,6 +1,7 @@
 package pkg
 
 import (
+    "github.com/daodao97/egin/pkg/cache"
     "github.com/daodao97/egin/pkg/db"
     "github.com/daodao97/egin/pkg/route"
     "github.com/daodao97/egin/pkg/utils"
@@ -18,6 +19,7 @@ type Bootstrap struct {
 
 func (boot *Bootstrap) Start() {
     db.InitDb()
+    cache.InitDb()
     gin.SetMode(utils.Config.Mode)
     //gin.DefaultWriter = ginLogger()
     boot.engine = gin.Default()
