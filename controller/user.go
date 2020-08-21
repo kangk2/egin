@@ -15,7 +15,16 @@ type User struct {
     BaseApi
 }
 
-func (u User) Get(c *gin.Context) (interface{}, consts.ErrCode, error) {
+type ParamsValidate struct {
+    A string `form:"a" binding:"required"`
+    B int    `form:"b" binding:"required"`
+}
+
+func (u User) Get(c *gin.Context, params interface{}) (interface{}, consts.ErrCode, error) {
+
+    var p *ParamsValidate
+    p = params.(*ParamsValidate)
+
     user := model.User
     result, err := user.Get(db.Filter{
         "id": map[string]int{
@@ -27,10 +36,10 @@ func (u User) Get(c *gin.Context) (interface{}, consts.ErrCode, error) {
     })
     // config := model.ConfigModel
     // result["config"] = config.Get()
-    return result, 0, err
+    return []interface{}{result, p}, 0, err
 }
 
-func (u User) Post(c *gin.Context) (interface{}, consts.ErrCode, error) {
+func (u User) Post(c *gin.Context, params interface{}) (interface{}, consts.ErrCode, error) {
     user := model.User
     result, _, err := user.Insert(db.Record{
         "username": "test33333",
@@ -41,10 +50,10 @@ func (u User) Post(c *gin.Context) (interface{}, consts.ErrCode, error) {
     if err != nil {
         code = consts.ErrorSystem
     }
-    return result, code, err
+    return []interface{}{result}, code, err
 }
 
-func (u User) Put(c *gin.Context) (interface{}, consts.ErrCode, error) {
+func (u User) Put(c *gin.Context, params interface{}) (interface{}, consts.ErrCode, error) {
     user := model.User
     _, affected, err := user.Update(
         db.Filter{
@@ -60,7 +69,7 @@ func (u User) Put(c *gin.Context) (interface{}, consts.ErrCode, error) {
     return affected, code, err
 }
 
-func (u User) Delete(c *gin.Context) (interface{}, consts.ErrCode, error) {
+func (u User) Delete(c *gin.Context, params interface{}) (interface{}, consts.ErrCode, error) {
     user := model.User
     _, affected, err := user.Delete(db.Filter{
         "id": 22,

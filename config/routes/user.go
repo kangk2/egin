@@ -14,19 +14,20 @@ var UserRouteGroup route.RoutesGroup
 func init() {
     UserRoute = route.RoutesMap{
         "/user": route.SingleRoute{
-            Handel: controller.User{}.Get,
+            Handler: controller.User{}.Get,
             Middlewares: []gin.HandlerFunc{
                 middleware.HttpLog(),
             },
+            Param: new(controller.ParamsValidate),
         },
         "POST::/user": route.SingleRoute{
-            Handel: controller.User{}.Post,
+            Handler: controller.User{}.Post,
         },
         "PUT::/user": route.SingleRoute{
-            Handel: controller.User{}.Put,
+            Handler: controller.User{}.Put,
         },
         "DELETE::/user": route.SingleRoute{
-            Handel: controller.User{}.Delete,
+            Handler: controller.User{}.Delete,
         },
     }
 
@@ -34,16 +35,16 @@ func init() {
         "/v1": {
             RoutesMap: route.RoutesMap{
                 "/user": route.SingleRoute{
-                    Handel: controller.User{}.Get,
+                    Handler: controller.User{}.Get,
                 },
                 "POST::/user": route.SingleRoute{
-                    Handel: controller.User{}.Post,
+                    Handler: controller.User{}.Post,
                 },
                 "PUT::/user": route.SingleRoute{
-                    Handel: controller.User{}.Put,
+                    Handler: controller.User{}.Put,
                 },
                 "DELETE::/user": route.SingleRoute{
-                    Handel: controller.User{}.Delete,
+                    Handler: controller.User{}.Delete,
                 },
             },
         },

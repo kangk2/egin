@@ -28,7 +28,9 @@
     "auth": {
         "ipAuth": {
             "enable": true,
-            "allowedIpList": ["127.0.0.1"]
+            "allowedIpList": [
+                "127.0.0.1"
+            ]
         }
     }
 }

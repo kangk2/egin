@@ -3,7 +3,6 @@ package main
 import (
     "fmt"
     "github.com/daodao97/egin/pkg/lib"
-    _ "github.com/go-sql-driver/mysql"
     "log"
     "sync"
 )
@@ -16,7 +15,7 @@ func main() {
 }
 
 func api() {
-    for i := 0; i < 100; i++ {
+    for i := 0; i < 500; i++ {
         wg.Add(1)
         go func(index int) {
             res, err := lib.Get("http://127.0.0.1:8080/user", map[string]string{}, map[string]string{})
