@@ -14,7 +14,10 @@
 ├── README.md
 ├── app.json 配置文件
 ├── config 配置目录
-│   └── routes.go 路由配置
+│   │── routes.go 路由配置
+│   │── routes 业务路由文件夹
+│   │   └── user.go 用户业务的路由定义
+│   │── middlewares.go 全局中间件
 ├── controller 控制器
 │   └── user.go
 ├── go.mod 项目依赖, 类似 php composer.json
@@ -36,7 +39,8 @@
 │   │   ├── http.go
 │   │   └── string.go
 │   ├── middleware http访问的中间件
-│   │   └── logger.go
+│   │   │── logger.go
+│   │   └── auth.go 鉴权中间件 IpAuth/AKSK...
 │   ├── route 路由解析注册
 │   │   └── route.go
 │   └── utils 通用工具
