@@ -107,6 +107,7 @@
 - [logrus日志](https://juejin.im/post/6844904061393698823)
 - [如何避免用动态语言的思维写Go代码](https://juejin.im/post/6861048173989724173)
 - [Gin中间件详解](https://juejin.im/post/6844903833164857358)
+- [数据验证](https://segmentfault.com/a/1190000022541905)
 
 ### 常用命令
 
