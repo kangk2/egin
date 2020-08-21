@@ -2,7 +2,7 @@
 
 本项目作为`Go`入门的实践项目, 将基于`Gin`框架完成一些封装. 最终目标实现一个`配置化的`,`能够快速上手的`, `规范目录结构的`脚手架.
 
-1. GO安排 [这里](https://www.jianshu.com/p/ad57228c6e6a)
+1. GO安装 [这里](https://www.jianshu.com/p/ad57228c6e6a)
 2. Go编程基础(视频) [这里](https://study.163.com/course/courseMain.htm?courseId=306002)
 3. GOWeb基础(视频) [这里](https://study.163.com/course/courseMain.htm?courseId=328001)
 4. 入门指南(文档) [这里](https://github.com/unknwon/the-way-to-go_ZH_CN)
