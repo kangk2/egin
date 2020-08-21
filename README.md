@@ -88,12 +88,34 @@
 
 ### 数据验证
 
-- [ ] 验证器
-- [ ] 接口参数合法性自动验证
+- [x] 验证器
+- [x] 接口参数合法性自动验证
 
 ### 权限验证
+
 - [ ] JWT
 - [ ] AKSK
+
+### 缓存
+
+- [x] redis的基础封装
+- [ ] 全量方法完善
+
+### 健康控制
+
+- [ ] 接口频率控制
+- [ ] prometheus打点
+
+### 微服务
+
+- [ ] grpc
+
+### 其他
+
+- [ ] consul
+- [ ] 配置中心
+- [ ] 开关服务
+- [ ] 规则引擎
 
 ### 参考资料
 - [Goprox解决安装慢](https://goproxy.cn/)
@@ -116,6 +138,7 @@
 - [数据验证](https://segmentfault.com/a/1190000022541905)
 - [Go 语言设计与实现](https://draveness.me/golang/docs/part1-prerequisite/ch02-compile/golang-compile-intro/)
 - [Go by Example](https://gobyexample.com/)
+- [mac/ab压测](https://xushanxiang.com/2019/10/mac-web-ab.html)
 
 ### 常用命令
 
@@ -125,7 +148,7 @@
 go run main.go
 go test -v ./pkg/db
 godoc -http=:8888
-fresh
+air
 ```
 
 
