@@ -11,7 +11,7 @@
 ### 目录结构定义
 ```bash
 ./
-├── README.md
+├── main.go 入口文件, 类似 php index.php
 ├── app.json 配置文件
 ├── config 配置目录
 │   │── routes.go 路由配置
@@ -20,9 +20,6 @@
 │   │── middlewares.go 全局中间件
 ├── controller 控制器
 │   └── user.go
-├── go.mod 项目依赖, 类似 php composer.json
-├── go.sum 依赖的锁定, 类似 php composer.lock
-├── main.go 入口文件, 类似 php index.php
 ├── model 数据库模型
 │   └── user.go 对应数据源 user 表
 ├── pkg 脚手架类库
@@ -47,6 +44,9 @@
 │       ├── config.go
 │       └── logger.go
 ├── service 业务服务
+├── go.mod 项目依赖, 类似 php composer.json
+├── go.sum 依赖的锁定, 类似 php composer.lock
+├── README.md
 ```
 
 #### Go的安装 
