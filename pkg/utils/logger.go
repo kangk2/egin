@@ -1,11 +1,12 @@
 package utils
 
 import (
-    rotatelogs "github.com/lestrrat-go/file-rotatelogs"
-    "github.com/sirupsen/logrus"
     "io"
     "os"
     "time"
+
+    rotatelogs "github.com/lestrrat-go/file-rotatelogs"
+    "github.com/sirupsen/logrus"
 )
 
 type LoggerInstance struct {

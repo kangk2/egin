@@ -1,14 +1,16 @@
 package utils
 
 import (
-    "github.com/daodao97/egin/pkg/lib"
+    "reflect"
+    "strings"
+
     "github.com/gin-gonic/gin/binding"
     "github.com/go-playground/locales/zh"
     ut "github.com/go-playground/universal-translator"
     "github.com/go-playground/validator/v10"
     zh_translations "github.com/go-playground/validator/v10/translations/zh"
-    "reflect"
-    "strings"
+
+    "github.com/daodao97/egin/pkg/lib"
 )
 
 var Validate *validator.Validate

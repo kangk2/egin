@@ -2,13 +2,15 @@ package utils
 
 import (
     "encoding/json"
-    "github.com/daodao97/egin/pkg/lib"
-    "github.com/joho/godotenv"
     "io/ioutil"
     "log"
     "os"
     "regexp"
     "strings"
+
+    "github.com/joho/godotenv"
+
+    "github.com/daodao97/egin/pkg/lib"
 )
 
 type ConfigStruct struct {

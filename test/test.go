@@ -2,11 +2,13 @@ package main
 
 import (
     "fmt"
-    "github.com/daodao97/egin/pkg/cache"
-    "github.com/daodao97/egin/pkg/lib"
-    "github.com/go-playground/validator/v10"
     "log"
     "sync"
+
+    "github.com/go-playground/validator/v10"
+
+    "github.com/daodao97/egin/pkg/cache"
+    "github.com/daodao97/egin/pkg/lib"
 )
 
 var wg sync.WaitGroup

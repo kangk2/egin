@@ -1,8 +1,9 @@
 package config
 
 import (
-    "github.com/daodao97/egin/pkg/middleware"
     "github.com/gin-gonic/gin"
+
+    "github.com/daodao97/egin/pkg/middleware"
 )
 
 type MiddlewaresSlice []func() gin.HandlerFunc
@@ -12,4 +13,5 @@ var HttpMiddlewares = MiddlewaresSlice{
     middleware.Cors,
     middleware.IPAuth,
     middleware.HttpLog,
+    middleware.Prometheus,
 }

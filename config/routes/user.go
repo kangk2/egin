@@ -1,11 +1,12 @@
 package routes
 
 import (
+    "github.com/gin-gonic/gin"
+
     "github.com/daodao97/egin/controller"
     "github.com/daodao97/egin/pkg/middleware"
     "github.com/daodao97/egin/pkg/route"
     "github.com/daodao97/egin/pkg/utils"
-    "github.com/gin-gonic/gin"
 )
 
 var UserRoute route.RoutesMap

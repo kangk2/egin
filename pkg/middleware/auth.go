@@ -1,11 +1,13 @@
 package middleware
 
 import (
-    "github.com/daodao97/egin/pkg/lib"
-    "github.com/daodao97/egin/pkg/utils"
-    "github.com/gin-gonic/gin"
     "net/http"
     "strings"
+
+    "github.com/gin-gonic/gin"
+
+    "github.com/daodao97/egin/pkg/lib"
+    "github.com/daodao97/egin/pkg/utils"
 )
 
 // cors

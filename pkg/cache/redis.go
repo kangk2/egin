@@ -3,9 +3,11 @@ package cache
 import (
     "context"
     "fmt"
-    "github.com/daodao97/egin/pkg/utils"
-    "github.com/go-redis/redis/v8"
     "time"
+
+    "github.com/go-redis/redis/v8"
+
+    "github.com/daodao97/egin/pkg/utils"
 )
 
 var ctx = context.Background()

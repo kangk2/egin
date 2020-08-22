@@ -2,14 +2,16 @@ package controller
 
 import (
     "encoding/json"
+    "time"
+
+    "github.com/gin-gonic/gin"
+    "github.com/go-playground/validator/v10"
+
     "github.com/daodao97/egin/model"
     "github.com/daodao97/egin/pkg/cache"
     "github.com/daodao97/egin/pkg/consts"
     "github.com/daodao97/egin/pkg/db"
     "github.com/daodao97/egin/pkg/utils"
-    "github.com/gin-gonic/gin"
-    "github.com/go-playground/validator/v10"
-    "time"
 )
 
 type BaseApi struct {

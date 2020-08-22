@@ -3,9 +3,10 @@ package db
 import (
     "database/sql"
     "fmt"
-    "github.com/daodao97/egin/pkg/utils"
     "strings"
     "time"
+
+    "github.com/daodao97/egin/pkg/utils"
 )
 
 // 从池子中捞出一个db对象, 注意, 这里并非 mysql 连接池

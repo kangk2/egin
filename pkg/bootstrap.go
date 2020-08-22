@@ -1,13 +1,17 @@
 package pkg
 
 import (
-    "github.com/daodao97/egin/pkg/cache"
-    "github.com/daodao97/egin/pkg/db"
-    "github.com/daodao97/egin/pkg/route"
-    "github.com/daodao97/egin/pkg/utils"
-    "github.com/gin-gonic/gin"
     "io"
     "os"
+
+    "github.com/gin-gonic/gin"
+    "github.com/prometheus/client_golang/prometheus/promhttp"
+
+    "github.com/daodao97/egin/pkg/cache"
+    "github.com/daodao97/egin/pkg/db"
+    "github.com/daodao97/egin/pkg/middleware"
+    "github.com/daodao97/egin/pkg/route"
+    "github.com/daodao97/egin/pkg/utils"
 )
 
 type Bootstrap struct {
@@ -26,6 +30,7 @@ func (boot *Bootstrap) Start() {
     boot.initValidator()
     boot.regMiddlewares()
     boot.regRoutes()
+    boot.engine.GET("/metrics", middleware.PromHandler(promhttp.Handler()))
     err := boot.engine.Run(utils.Config.Address)
     if err != nil {
         return

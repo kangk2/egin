@@ -1,13 +1,15 @@
 package route
 
 import (
+    "net/http"
+    "strings"
+
+    "github.com/gin-gonic/gin"
+    "github.com/go-playground/validator/v10"
+
     "github.com/daodao97/egin/pkg/consts"
     "github.com/daodao97/egin/pkg/lib"
     "github.com/daodao97/egin/pkg/utils"
-    "github.com/gin-gonic/gin"
-    "github.com/go-playground/validator/v10"
-    "net/http"
-    "strings"
 )
 
 type SingleRoute struct {

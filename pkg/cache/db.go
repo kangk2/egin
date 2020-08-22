@@ -2,9 +2,11 @@ package cache
 
 import (
     "fmt"
-    "github.com/daodao97/egin/pkg/utils"
-    "github.com/go-redis/redis/v8"
     "sync"
+
+    "github.com/go-redis/redis/v8"
+
+    "github.com/daodao97/egin/pkg/utils"
 )
 
 var pool sync.Map

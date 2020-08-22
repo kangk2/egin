@@ -2,9 +2,10 @@ package db
 
 import (
     "fmt"
-    "github.com/daodao97/egin/pkg/lib"
     "regexp"
     "strings"
+
+    "github.com/daodao97/egin/pkg/lib"
 )
 
 // sql 片段的构造

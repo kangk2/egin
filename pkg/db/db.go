@@ -3,9 +3,11 @@ package db
 import (
     "database/sql"
     "fmt"
-    "github.com/daodao97/egin/pkg/utils"
-    _ "github.com/go-sql-driver/mysql"
     "sync"
+
+    _ "github.com/go-sql-driver/mysql"
+
+    "github.com/daodao97/egin/pkg/utils"
 )
 
 var pool sync.Map

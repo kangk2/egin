@@ -1,9 +1,11 @@
 package middleware
 
 import (
-    "github.com/daodao97/egin/pkg/utils"
-    "github.com/gin-gonic/gin"
     "time"
+
+    "github.com/gin-gonic/gin"
+
+    "github.com/daodao97/egin/pkg/utils"
 )
 
 // 日志记录到文件
