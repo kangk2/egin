@@ -1,18 +1,20 @@
 package route
 
 import (
-    "fmt"
     "github.com/daodao97/egin/pkg/consts"
     "github.com/daodao97/egin/pkg/lib"
     "github.com/daodao97/egin/pkg/utils"
     "github.com/gin-gonic/gin"
+    "github.com/go-playground/validator/v10"
+    "net/http"
     "strings"
 )
 
 type SingleRoute struct {
-    Handler     func(c *gin.Context, param interface{}) (interface{}, consts.ErrCode, error)
-    Middlewares []gin.HandlerFunc
-    Param       interface{}
+    Handler             func(c *gin.Context) (interface{}, consts.ErrCode, error)
+    Middlewares         []gin.HandlerFunc
+    Param               interface{}
+    CustomValidateFuncs []utils.CustomValidateFunc
 }
 
 type routePath string
@@ -27,19 +29,20 @@ type RoutesGroup map[groupName]struct {
 func wrap(singleRoute SingleRoute) func(c *gin.Context) {
     return func(c *gin.Context) {
         param := singleRoute.Param
-        fmt.Println(1111111, param, param == nil, singleRoute)
         if param != nil {
             err := c.ShouldBind(param)
             if err != nil {
-                c.JSON(200, gin.H{
-                    "err": err.Error(),
+                errs, _ := utils.TransErr(param, err.(validator.ValidationErrors))
+                c.JSON(http.StatusOK, gin.H{
+                    "code":    consts.ErrorParam,
+                    "message": errs,
                 })
                 return
             }
             c.Set("params", param)
         }
 
-        result, code, err := singleRoute.Handler(c, param)
+        result, code, err := singleRoute.Handler(c)
 
         response := gin.H{
             "code":    code,
@@ -55,7 +58,7 @@ func wrap(singleRoute SingleRoute) func(c *gin.Context) {
             }
         }
 
-        c.JSON(200, response)
+        c.JSON(http.StatusOK, response)
     }
 }
 

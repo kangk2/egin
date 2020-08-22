@@ -4,15 +4,17 @@ import (
     "fmt"
     "github.com/daodao97/egin/pkg/cache"
     "github.com/daodao97/egin/pkg/lib"
+    "github.com/go-playground/validator/v10"
     "log"
     "sync"
 )
 
 var wg sync.WaitGroup
 
-func main() {
+func maina() {
     //api()
-    redis()
+    //redis()
+    valid()
     fmt.Println("over")
 }
 
@@ -41,4 +43,32 @@ func api() {
         }(i)
     }
     wg.Wait()
+}
+
+func valid() {
+
+    validate := validator.New()
+
+    err := validate.Struct(1)
+    processErr(err)
+
+    err = validate.VarWithValue(1, 2, "eqfield")
+    processErr(err)
+}
+
+func processErr(err error) {
+    if err == nil {
+        return
+    }
+
+    invalid, ok := err.(*validator.InvalidValidationError)
+    if ok {
+        fmt.Println("param error:", invalid)
+        return
+    }
+
+    validationErrs := err.(validator.ValidationErrors)
+    for _, validationErr := range validationErrs {
+        fmt.Println(validationErr)
+    }
 }

@@ -2,6 +2,7 @@ package lib
 
 import (
     "bytes"
+    "errors"
     "fmt"
     "log"
     "reflect"
@@ -174,4 +175,26 @@ func GetGID() uint64 {
     b = b[:bytes.IndexByte(b, ' ')]
     n, _ := strconv.ParseUint(string(b), 10, 64)
     return n
+}
+
+// 根据标签名获取结构体中的值, 返回 field : tagVale 的map
+func GetStructAllTag(obj interface{}, tagName string) (map[string]string, error) {
+    s := reflect.TypeOf(obj)
+
+    info := make(map[string]string)
+
+    if s.Kind() == reflect.Ptr {
+        s = s.Elem()
+    }
+
+    if s.Kind() != reflect.Struct {
+        return info, errors.New("arg1 is not a struct")
+    }
+
+    for i := 0; i < s.NumField(); i++ {
+        f := s.Field(i)
+        info[f.Name] = f.Tag.Get(tagName)
+    }
+
+    return info, nil
 }

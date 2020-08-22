@@ -2,12 +2,14 @@ package controller
 
 import (
     "encoding/json"
-    "fmt"
     "github.com/daodao97/egin/model"
     "github.com/daodao97/egin/pkg/cache"
     "github.com/daodao97/egin/pkg/consts"
     "github.com/daodao97/egin/pkg/db"
+    "github.com/daodao97/egin/pkg/utils"
     "github.com/gin-gonic/gin"
+    "github.com/go-playground/validator/v10"
+    "time"
 )
 
 type BaseApi struct {
@@ -18,15 +20,33 @@ type User struct {
     BaseApi
 }
 
+// FIXME time_format not working
 type ParamsValidate struct {
-    A string `form:"a" binding:"required"`
-    B int    `form:"b" binding:"required"`
+    CheckIn  time.Time `form:"check_in" json:"check_in" binding:"required,bookabledate" time_format:"2006-01-02" label:"输入时间"`
+    CheckOut time.Time `form:"check_out" json:"check_out" binding:"required,gtfield=CheckIn" time_format:"2006-01-02" label:"输出时间"`
 }
 
-func (u User) Get(c *gin.Context, params interface{}) (interface{}, consts.ErrCode, error) {
+var Bookabledate = utils.CustomValidateFunc{
+    Handle: func(fl validator.FieldLevel) bool {
+        date, ok := fl.Field().Interface().(time.Time)
+        if ok {
+            today := time.Now()
+            if today.After(date) {
+                return false
+            }
+        }
+        return true
+    },
+    TagName: "bookabledate",
+    Message: "{0}不能早于当前时间或{1}格式错误!",
+}
+
+func (u User) Get(c *gin.Context) (interface{}, consts.ErrCode, error) {
 
     var p *ParamsValidate
-    p = params.(*ParamsValidate)
+    if params, exists := c.Get("params"); exists {
+        p = params.(*ParamsValidate)
+    }
 
     user := model.User
     result, err := user.Get(db.Filter{
@@ -41,14 +61,12 @@ func (u User) Get(c *gin.Context, params interface{}) (interface{}, consts.ErrCo
     redis := cache.Redis{Connection: "default"}
     setV, _ := json.Marshal([]int{1, 2, 4})
     err = redis.Set("egin:test", setV, 0)
-    fmt.Println(222222222, err)
     _cache, err := redis.Get("egin:test")
-    fmt.Println(3333333333, err)
 
     return []interface{}{result, p, _cache}, 0, err
 }
 
-func (u User) Post(c *gin.Context, params interface{}) (interface{}, consts.ErrCode, error) {
+func (u User) Post(c *gin.Context) (interface{}, consts.ErrCode, error) {
     user := model.User
     result, _, err := user.Insert(db.Record{
         "username": "test33333",
@@ -62,7 +80,7 @@ func (u User) Post(c *gin.Context, params interface{}) (interface{}, consts.ErrC
     return []interface{}{result}, code, err
 }
 
-func (u User) Put(c *gin.Context, params interface{}) (interface{}, consts.ErrCode, error) {
+func (u User) Put(c *gin.Context) (interface{}, consts.ErrCode, error) {
     user := model.User
     _, affected, err := user.Update(
         db.Filter{
@@ -78,7 +96,7 @@ func (u User) Put(c *gin.Context, params interface{}) (interface{}, consts.ErrCo
     return affected, code, err
 }
 
-func (u User) Delete(c *gin.Context, params interface{}) (interface{}, consts.ErrCode, error) {
+func (u User) Delete(c *gin.Context) (interface{}, consts.ErrCode, error) {
     user := model.User
     _, affected, err := user.Delete(db.Filter{
         "id": 22,
