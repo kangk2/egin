@@ -20,6 +20,13 @@ type ConfigStruct struct {
     Logger   LoggerStruct
     Lan      string
     Auth     struct {
+        Cors struct {
+            Enable           bool
+            AllowOrigins     []string // 允许源列表
+            AllowMethods     []string // 允许的方法列表
+            AllowHeaders     []string // 允许的头部信息
+            AllowCredentials bool     // 允许暴露请求的响应
+        }
         IpAuth struct {
             Enable        bool
             AllowedIpList []string

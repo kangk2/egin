@@ -32,6 +32,9 @@
         }
     },
     "auth": {
+        "cors": {
+            "enable": false
+        },
         "ipAuth": {
             "enable": true,
             "allowedIpList": [

@@ -15,7 +15,7 @@ var Validate *validator.Validate
 
 var Trans ut.Translator
 
-func init()  {
+func init() {
     InitValidator()
 }
 
