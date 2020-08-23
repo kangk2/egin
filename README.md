@@ -121,9 +121,10 @@
 - [ ] 配置中心
 - [ ] 开关服务
 - [ ] 规则引擎
+- [x] RabbitMQ
 
 ### 参考资料
-- [Goprox解决安装慢](https://goproxy.cn/)
+- [GoProxy解决安装慢](https://goproxy.cn/)
 - [database/sql资料](https://segmentfault.com/a/1190000003036452)
 - [go/tools-github](https://github.com/golang/tools)
 - [go/tools简明介绍](https://studygolang.com/articles/11837)
@@ -145,6 +146,7 @@
 - [Go by Example](https://gobyexample.com/)
 - [mac/ab压测](https://xushanxiang.com/2019/10/mac-web-ab.html)
 - [prometheus](https://yunlzheng.gitbook.io/prometheus-book/)
+- [macRabbitMQ](https://www.jianshu.com/p/60c358235705)
 
 ### 常用命令
 

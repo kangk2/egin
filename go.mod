@@ -19,6 +19,7 @@ require (
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/prometheus/client_golang v1.7.1
 	github.com/sirupsen/logrus v1.6.0
+	github.com/streadway/amqp v1.0.0
 	github.com/tebeka/strftime v0.1.5 // indirect
 	golang.org/x/tools v0.0.0-20200820010801-b793a1359eac // indirect
 	google.golang.org/appengine v1.6.6 // indirect
