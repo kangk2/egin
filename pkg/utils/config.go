@@ -34,6 +34,10 @@ type ConfigStruct struct {
             AllowedIpList []string
         }
     }
+    Jwt struct {
+        Secret      string
+        TokenExpire int64
+    }
 }
 
 type Database struct {
