@@ -62,7 +62,7 @@
 我们将在 `conf/routes.go` 中集中定义项目路由, 项目启动时统一注册到`Gin`框架中
 
 - [x] conf/routes.go 基础路由定义
-- [ ] conf/routes/**.go 多文件定义
+- [x] conf/routes/**.go 多文件定义
 
 ### 配置的管理
 
@@ -104,7 +104,12 @@
 ### 健康控制
 
 - [ ] 接口频率控制
+    - [ ] ip维度
+    - [ ] 用户维度
 - [ ] prometheus打点
+    - [x] api打点
+    - [ ] db数据打点
+    - [ ] redis打点
 
 ### 微服务
 
@@ -151,5 +156,11 @@ go test -v ./pkg/db
 godoc -http=:8888
 air
 ```
+
+### 常见问题
+
+-  dial tcp 127.0.0.1:8080: socket: too many open files
+
+    [永久修改 mac mac files/proc 限制](https://javasgl.github.io/mac-max-limit/)
 
 

@@ -15,6 +15,7 @@ const namespace = "service"
 var (
     labels = []string{"status", "endpoint", "method"}
 
+    // 启动时间
     uptime = prometheus.NewCounterVec(
         prometheus.CounterOpts{
             Namespace: namespace,
@@ -23,6 +24,7 @@ var (
         }, nil,
     )
 
+    // 请求计数
     reqCount = prometheus.NewCounterVec(
         prometheus.CounterOpts{
             Namespace: namespace,
@@ -31,6 +33,7 @@ var (
         }, labels,
     )
 
+    // 请求耗时
     reqDuration = prometheus.NewHistogramVec(
         prometheus.HistogramOpts{
             Namespace: namespace,
@@ -39,6 +42,7 @@ var (
         }, labels,
     )
 
+    // 请求包大小
     reqSizeBytes = prometheus.NewSummaryVec(
         prometheus.SummaryOpts{
             Namespace: namespace,
@@ -47,6 +51,7 @@ var (
         }, labels,
     )
 
+    // 响应包大小
     respSizeBytes = prometheus.NewSummaryVec(
         prometheus.SummaryOpts{
             Namespace: namespace,
@@ -143,9 +148,13 @@ func PromMiddleware(promOpts *PromOpts) gin.HandlerFunc {
             return
         }
 
+        // api 请求计数
         reqCount.WithLabelValues(lvs...).Inc()
+        // api 请求耗时
         reqDuration.WithLabelValues(lvs...).Observe(time.Since(start).Seconds())
+        // api 请求包大小
         reqSizeBytes.WithLabelValues(lvs...).Observe(calcRequestSize(c.Request))
+        // api 响应包大小
         respSizeBytes.WithLabelValues(lvs...).Observe(float64(c.Writer.Size()))
     }
 }

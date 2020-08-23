@@ -13,10 +13,10 @@ import (
 
 var wg sync.WaitGroup
 
-func maina() {
-    //api()
+func main() {
+    api()
     //redis()
-    valid()
+    //valid()
     fmt.Println("over")
 }
 
@@ -31,15 +31,16 @@ func redis() {
 }
 
 func api() {
-    for i := 0; i < 500; i++ {
+    for i := 0; i < 5000; i++ {
         wg.Add(1)
         go func(index int) {
-            res, err := lib.Get("http://127.0.0.1:8080/user", map[string]string{}, map[string]string{})
+            res, err := lib.Get("http://127.0.0.1:8080/v1/user", map[string]string{}, map[string]string{})
             if err != nil {
                 log.Println("ERROR", err)
             } else {
-                log.Println("RESULT", res)
+                //log.Println("RESULT", res)
                 fmt.Println(index, res.StatusCode == 200)
+                defer res.Body.Close()
             }
             wg.Done()
         }(i)

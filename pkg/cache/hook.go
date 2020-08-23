@@ -6,9 +6,24 @@ import (
     "time"
 
     "github.com/go-redis/redis/v8"
+    "github.com/prometheus/client_golang/prometheus"
 
     "github.com/daodao97/egin/pkg/utils"
 )
+
+var namespace = "service"
+var labels = []string{"endpoint", "method"}
+var reqCount = prometheus.NewCounterVec(
+    prometheus.CounterOpts{
+        Namespace: namespace,
+        Name:      "redis_request_count_total",
+        Help:      "Total number of Redis key call.",
+    }, labels,
+)
+
+func init() {
+    prometheus.MustRegister(reqCount)
+}
 
 type logger struct {
 }
@@ -26,6 +41,14 @@ func (l *logger) AfterProcess(ctx context.Context, cmd redis.Cmder) error {
         "args":   cmd.Args(),
         "ums":    fmt.Sprintf("%v", tc),
     })
+
+    endpoint := key
+    method := cmd.FullName()
+
+    lvs := []string{endpoint, method}
+
+    // api 请求计数
+    reqCount.WithLabelValues(lvs...).Inc()
     return nil
 }
 

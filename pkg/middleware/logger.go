@@ -5,6 +5,7 @@ import (
 
     "github.com/gin-gonic/gin"
 
+    "github.com/daodao97/egin/pkg/lib"
     "github.com/daodao97/egin/pkg/utils"
 )
 
@@ -12,6 +13,11 @@ import (
 func HttpLog() gin.HandlerFunc {
 
     return func(c *gin.Context) {
+        // 请求路由
+        reqUri := c.Request.RequestURI
+        if _, ok := lib.Find([]string{"/metrics"}, reqUri); ok {
+            return
+        }
         startTime := time.Now()
         // 处理请求
         c.Next()
@@ -21,8 +27,6 @@ func HttpLog() gin.HandlerFunc {
         latencyTime := endTime.Sub(startTime)
         // 请求方式
         reqMethod := c.Request.Method
-        // 请求路由
-        reqUri := c.Request.RequestURI
         // 状态码
         statusCode := c.Writer.Status()
         // 请求IP
