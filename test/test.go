@@ -17,6 +17,8 @@ func main() {
     //api()
     //redis()
     //valid()
+    //utils.ConsulKVTest()
+    //utils.ConsulDeRegister()
     fmt.Println("over")
 }
 

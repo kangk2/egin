@@ -2,6 +2,7 @@ package pkg
 
 import (
     "io"
+    "net/http"
     "os"
 
     "github.com/gin-gonic/gin"
@@ -47,6 +48,11 @@ func (boot *Bootstrap) regMiddlewares() {
 func (boot *Bootstrap) regRoutes() {
     route.RegRoutes(boot.engine, boot.RoutesMap)
     route.RegRouteGroup(boot.engine, boot.RoutesGroup)
+    boot.engine.GET("/consul", func(c *gin.Context) {
+        c.JSON(http.StatusOK, gin.H{
+            "message": "ok",
+        })
+    })
 }
 
 func (boot *Bootstrap) initValidator() {

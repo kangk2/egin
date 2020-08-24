@@ -55,7 +55,6 @@ func (r *RabbitMQ) init() {
 
     var mqUrl = fmt.Sprintf("amqp://%s:%s@%s:%d/%s", conf.User, conf.Passwd, conf.Host, conf.Port, conf.Vhost)
 
-    fmt.Println(mqUrl)
     conn, err := amqp.Dial(mqUrl)
     if err != nil {
         logger.Error(fmt.Sprintf("rabbitmq dial fail [%s:%s]", r.Connection, err))
