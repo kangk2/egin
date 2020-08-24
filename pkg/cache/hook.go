@@ -25,15 +25,15 @@ func init() {
     prometheus.MustRegister(reqCount)
 }
 
-type logger struct {
+type loggerHook struct {
 }
 
-func (l *logger) BeforeProcess(ctx context.Context, cmd redis.Cmder) (context.Context, error) {
+func (l *loggerHook) BeforeProcess(ctx context.Context, cmd redis.Cmder) (context.Context, error) {
     newCtx := context.WithValue(ctx, "start", time.Now())
     return newCtx, nil
 }
 
-func (l *logger) AfterProcess(ctx context.Context, cmd redis.Cmder) error {
+func (l *loggerHook) AfterProcess(ctx context.Context, cmd redis.Cmder) error {
     key := fmt.Sprintf("%s.%s", cmd.Args()[0], cmd.Args()[1])
     tc := time.Since(ctx.Value("start").(time.Time))
     utils.Logger.Channel("redis").Info(key, map[string]interface{}{
@@ -52,12 +52,12 @@ func (l *logger) AfterProcess(ctx context.Context, cmd redis.Cmder) error {
     return nil
 }
 
-func (l *logger) BeforeProcessPipeline(ctx context.Context, cmds []redis.Cmder) (context.Context, error) {
+func (l *loggerHook) BeforeProcessPipeline(ctx context.Context, cmds []redis.Cmder) (context.Context, error) {
     fmt.Println("logger before pipe")
     return ctx, nil
 }
 
-func (l *logger) AfterProcessPipeline(ctx context.Context, cmds []redis.Cmder) error {
+func (l *loggerHook) AfterProcessPipeline(ctx context.Context, cmds []redis.Cmder) error {
     fmt.Println("logger after pipe")
     return nil
 }

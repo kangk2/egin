@@ -23,8 +23,11 @@ func main() {
 }
 
 func push() {
-    mq := utils.NewRabbitMQSimple("egin_amqp_test")
-    err := mq.PublishSimple("this is a test message")
+    mq := utils.RabbitMQ{
+        Connection: "default",
+        QueueName:  "egin_test_queue",
+    }
+    err := mq.Publish("this is a test message")
     if err == nil {
         fmt.Println("投递成功")
     } else {
@@ -33,8 +36,14 @@ func push() {
 }
 
 func consume() {
-    mq := utils.NewRabbitMQSimple("egin_amqp_test")
-    mq.ConsumeSimple(func(msg string) error {
+    mq := utils.RabbitMQ{
+        Connection: "default",
+        QueueName:  "egin_test_queue",
+        ConsumeConf: utils.ConsumeOptions{
+            ConsumerName: "my_consume",
+        },
+    }
+    mq.Consume(func(msg string) error {
         log.Printf("Received a message: %s", msg)
         return nil
     })

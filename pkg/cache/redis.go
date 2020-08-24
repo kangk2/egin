@@ -17,12 +17,13 @@ type Redis struct {
     Connection string
 }
 
+var logger = utils.Logger.Channel("redis")
+
 func (r *Redis) init() {
     if r.rdb != nil {
         return
     }
 
-    logger := utils.Logger.Channel("redis")
     _, ok := utils.Config.Database[r.Connection]
     if !ok {
         logger.Error(fmt.Sprintf("redis connection %s not found", r.Connection))

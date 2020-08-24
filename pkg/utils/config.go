@@ -38,6 +38,7 @@ type ConfigStruct struct {
         Secret      string
         TokenExpire int64
     }
+    RabbitMQ map[string]Rabbitmq
 }
 
 type Database struct {
@@ -68,6 +69,14 @@ type Redis struct {
     Port     int
     DB       int
     Password string
+}
+
+type Rabbitmq struct {
+    Host   string
+    Port   int
+    User   string
+    Passwd string
+    Vhost  string
 }
 
 var Config ConfigStruct

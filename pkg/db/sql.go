@@ -10,11 +10,11 @@ import (
 
 // sql 片段的构造
 
-const LOGIC_STR_AND = "and"
-const LOGIC_STR_OR = "or"
+const LogicStrAnd = "and"
+const LogicStrOr = "or"
 
-const LOGIC_INT_AND = 1
-const LOGIC_INT_OR = 0
+const LogicIntAnd = 1
+const LogicIntOr = 0
 
 type Filter map[string]interface{}
 
@@ -77,7 +77,7 @@ func FilterToQuery(filter Filter) (string, []interface{}) {
     }
     logic := filter["__logic"]
     if logic == nil {
-        logic = "and"
+        logic = LogicStrAnd
     }
     var scopes []string
 
@@ -92,7 +92,7 @@ func FilterToQuery(filter Filter) (string, []interface{}) {
             scopes = append(scopes, fmt.Sprintf("`%s` in (%s)", k, strings.Join(pl, ",")))
         case map[string]string:
             var _scope []string
-            var _logic string = "and"
+            var _logic = LogicStrAnd
             for op, val := range v.(map[string]string) {
                 _, found := lib.Find([]string{">", ">=", "<", "<=", "=", "<>", "!="}, op)
                 if found {
@@ -106,7 +106,7 @@ func FilterToQuery(filter Filter) (string, []interface{}) {
             scopes = append(scopes, fmt.Sprintf("(%s)", strings.Join(_scope, fmt.Sprintf(" %s ", _logic))))
         case map[string]int:
             var _scope []string
-            var _logic int = LOGIC_INT_AND
+            var _logic = LogicIntAnd
             for op, val := range v.(map[string]int) {
                 _, found := lib.Find([]string{">", ">=", "<", "<=", "=", "<>", "!="}, op)
                 if found {
@@ -118,10 +118,10 @@ func FilterToQuery(filter Filter) (string, []interface{}) {
                 args = append(args, val)
             }
             var logicStr string
-            if _logic == LOGIC_INT_AND {
-                logicStr = "and"
-            } else {
-                logicStr = "or"
+            if _logic == LogicIntAnd {
+                logicStr = LogicStrAnd
+            } else if _logic == LogicIntOr {
+                logicStr = LogicStrOr
             }
             scopes = append(scopes, fmt.Sprintf("(%s)", strings.Join(_scope, fmt.Sprintf(" %s ", logicStr))))
         default:

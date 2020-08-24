@@ -7,8 +7,26 @@ import (
     "github.com/streadway/amqp"
 )
 
-// MQURL 格式 amqp://账号：密码@rabbitmq服务器地址：端口号/vhost
-const MQURL = "amqp://guest:guest@127.0.0.1:5672/ptmsg"
+var logger = Logger.Channel("mq")
+
+type QueueOptions struct {
+    QueueName  string     // queue 名称
+    Durable    bool       // 是否持久化
+    AutoDelete bool       // 是否为自动删除
+    Exclusive  bool       // 是否具有排他性
+    NoWait     bool       // 是否阻塞
+    Args       amqp.Table // 额外属性
+}
+
+// queue, consumer string, autoAck, exclusive, noLocal, noWait bool, args Table
+type ConsumeOptions struct {
+    ConsumerName string     // 用于区分不同的消费者
+    AutoAck      bool       // 是否自动应答
+    Exclusive    bool       // 是否具有排他性
+    NoLocal      bool       // 如果设置为true，表示不能将同一个connection中发送的消息传递给这个connection中的消费者
+    NoWait       bool       // 队列消费是否阻塞
+    Args         amqp.Table // 额外属性
+}
 
 type RabbitMQ struct {
     conn    *amqp.Connection
@@ -19,46 +37,59 @@ type RabbitMQ struct {
     Exchange string
     // Key
     Key string
-    // 连接信息
-    Mqurl string
+    // 配置中的链接名
+    Connection  string
+    QueueConf   QueueOptions
+    ConsumeConf ConsumeOptions
 }
 
-// Destroy 断开channel和connection
-func (r *RabbitMQ) Destroy() {
-    _ = r.channel.Close()
-    _ = r.conn.Close()
-}
-
-// failOnErr 错误处理函数
-func (r *RabbitMQ) failOnErr(err error, message string) {
-    if err != nil {
-        log.Fatalf("%s:%s", message, err)
-        panic(fmt.Sprintf("%s:%s", message, err))
+func (r *RabbitMQ) init() {
+    if r.conn != nil {
+        return
     }
+    if r.Connection == "" {
+        r.Connection = "default"
+    }
+
+    conf := Config.RabbitMQ[r.Connection]
+
+    var mqUrl = fmt.Sprintf("amqp://%s:%s@%s:%d/%s", conf.User, conf.Passwd, conf.Host, conf.Port, conf.Vhost)
+
+    fmt.Println(mqUrl)
+    conn, err := amqp.Dial(mqUrl)
+    if err != nil {
+        logger.Error(fmt.Sprintf("rabbitmq dial fail [%s:%s]", r.Connection, err))
+        return
+    }
+    r.conn = conn
+
+    channel, err := r.conn.Channel()
+    if err != nil {
+        logger.Error(fmt.Sprintf("rabbitmq channel fail [%s:%s]", r.Connection, err))
+        return
+    }
+    r.channel = channel
 }
 
-// 简单模式Step 2:简单模式下生产代码
-func (r *RabbitMQ) PublishSimple(message string) error {
-    // 1. 申请队列，如果队列不存在会自动创建，如何存在则跳过创建
-    // 保证队列存在，消息能发送到队列中
+func (r *RabbitMQ) Queue() *RabbitMQ {
+    r.init()
     _, err := r.channel.QueueDeclare(
         r.QueueName,
-        // 是否持久化
-        false,
-        // 是否为自动删除
-        false,
-        // 是否具有排他性
-        false,
-        // 是否阻塞
-        false,
-        // 额外属性
-        nil,
+        r.QueueConf.Durable,
+        r.QueueConf.AutoDelete,
+        r.QueueConf.Exclusive,
+        r.QueueConf.NoWait,
+        r.QueueConf.Args,
     )
     if err != nil {
-        fmt.Println(err)
+        logger.Error(fmt.Sprintf("rabbitmq QueueDeclare fail [%s:%s]", r.Connection, err))
     }
 
-    // 2.发送消息到队列中
+    return r
+}
+
+func (r *RabbitMQ) Publish(message string) error {
+    r.Queue()
     return r.channel.Publish(
         r.Exchange,
         r.QueueName,
@@ -73,41 +104,18 @@ func (r *RabbitMQ) PublishSimple(message string) error {
     )
 }
 
-// ConsumeSimple 使用 goroutine 消费消息
-func (r *RabbitMQ) ConsumeSimple(handler func(msg string) error) {
-    // 1. 申请队列，如果队列不存在会自动创建，如何存在则跳过创建
-    // 保证队列存在，消息能发送到队列中
-    _, err := r.channel.QueueDeclare(
-        r.QueueName,
-        // 是否持久化
-        false,
-        // 是否为自动删除
-        false,
-        // 是否具有排他性
-        false,
-        // 是否阻塞
-        false,
-        // 额外属性
-        nil,
-    )
-    if err != nil {
-        fmt.Println(err)
-    }
-
+// Consume 使用 goroutine 消费消息
+func (r *RabbitMQ) Consume(handler func(msg string) error) {
+    r.Queue()
     // 接收消息
     messageChan, err := r.channel.Consume(
         r.QueueName,
-        // 用来区分多个消费者
-        "",
-        // 是否自动应答
-        true,
-        // 是否具有排他性
-        false,
-        // 如果设置为true，表示不能将同一个connection中发送的消息传递给这个connection中的消费者
-        false,
-        // 队列消费是否阻塞
-        false,
-        nil,
+        r.ConsumeConf.ConsumerName,
+        r.ConsumeConf.AutoAck, // FIXME
+        r.ConsumeConf.Exclusive,
+        r.ConsumeConf.NoLocal,
+        r.ConsumeConf.NoWait,
+        r.ConsumeConf.Args,
     )
 
     if err != nil {
@@ -121,6 +129,12 @@ func (r *RabbitMQ) ConsumeSimple(handler func(msg string) error) {
             err := handler(string(d.Body))
             if err != nil {
                 log.Fatalf("message handle fail: %s", err)
+            } else {
+                // FIXME 批处理
+                err := d.Ack(false)
+                if err != nil {
+                    logger.Error(fmt.Sprintf("rabbitmq consume fail [%s:%s]", r.Connection, err))
+                }
             }
         }
     }()
@@ -128,27 +142,8 @@ func (r *RabbitMQ) ConsumeSimple(handler func(msg string) error) {
     <-forever
 }
 
-// NewRabbitMQ 创建结构体实例
-func NewRabbitMQ(queueName, exchange, key string) *RabbitMQ {
-    rabbitmq := &RabbitMQ{
-        QueueName: queueName,
-        Exchange:  exchange,
-        Key:       key,
-        Mqurl:     MQURL,
-    }
-    var err error
-    // 创建rabbitmq连接
-    rabbitmq.conn, err = amqp.Dial(rabbitmq.Mqurl)
-    rabbitmq.failOnErr(err, "创建连接错误！")
-
-    rabbitmq.channel, err = rabbitmq.conn.Channel()
-    rabbitmq.failOnErr(err, "获取channel失败！")
-
-    return rabbitmq
-}
-
-// NewRabbitMQSimple
-// 创建简单模式下的RabbitMq实例
-func NewRabbitMQSimple(queueName string) *RabbitMQ {
-    return NewRabbitMQ(queueName, "", "")
+// Destroy 断开channel和connection
+func (r *RabbitMQ) Destroy() {
+    _ = r.channel.Close()
+    _ = r.conn.Close()
 }

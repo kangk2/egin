@@ -32,7 +32,7 @@ func makeDb(conf utils.Redis) *redis.Client {
         DB:       conf.DB,
     })
 
-    rdb.AddHook(&logger{})
+    rdb.AddHook(&loggerHook{})
 
     return rdb
 }

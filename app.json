@@ -31,6 +31,15 @@
             "port": 6379
         }
     },
+    "rabbitmq": {
+        "default": {
+            "host": "localhost",
+            "port": 5672,
+            "user": "guest",
+            "passwd": "guest",
+            "vhost": "egin"
+        }
+    },
     "auth": {
         "cors": {
             "enable": false
