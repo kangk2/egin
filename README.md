@@ -159,6 +159,7 @@
 - [如何避免用动态语言的思维写Go代码](https://juejin.im/post/6861048173989724173)
 - [Gin中间件详解](https://juejin.im/post/6844903833164857358)
 - [数据验证](https://segmentfault.com/a/1190000022541905)
+- [validator](https://frankhitman.github.io/zh-CN/gin-validator/)
 - [Go 语言设计与实现](https://draveness.me/golang/docs/part1-prerequisite/ch02-compile/golang-compile-intro/)
 - [Go by Example](https://gobyexample.com/)
 - [mac/ab压测](https://xushanxiang.com/2019/10/mac-web-ab.html)
