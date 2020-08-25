@@ -1,11 +1,11 @@
 package route
 
 import (
-	"fmt"
 	"net/http"
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 
 	"github.com/daodao97/egin/pkg/consts"
 	"github.com/daodao97/egin/pkg/lib"
@@ -34,11 +34,10 @@ func wrap(singleRoute SingleRoute) func(c *gin.Context) {
 		if param != nil {
 			err := c.ShouldBind(param)
 			if err != nil {
-				//errs, _ := utils.TransErr(param, err.(validator.ValidationErrors))
-				fmt.Println(1111, err)
+				errs, _ := utils.TransErr(param, err.(validator.ValidationErrors))
 				c.JSON(http.StatusOK, gin.H{
 					"code":    consts.ErrorParam,
-					"message": err,
+					"message": errs,
 				})
 				return
 			}
