@@ -2,11 +2,13 @@ package utils
 
 import (
     "encoding/json"
+    "fmt"
     "io/ioutil"
     "log"
     "os"
     "regexp"
     "strings"
+    "time"
 
     "github.com/joho/godotenv"
 
@@ -14,6 +16,7 @@ import (
 )
 
 type ConfigStruct struct {
+    Name     string
     Address  string
     Mode     string
     Custom   interface{}
@@ -39,6 +42,7 @@ type ConfigStruct struct {
         TokenExpire int64
     }
     RabbitMQ map[string]Rabbitmq
+    Consul   string
 }
 
 type Database struct {
@@ -116,4 +120,30 @@ func init() {
     if err != nil {
         return
     }
+
+    kv, err := ConsulKV(Config.Consul)
+    if err != nil {
+        return
+    }
+    // 远程配置只能回覆盖式的, 不支持删除某个配置
+    remoteConfKey := fmt.Sprintf("%s/%s", Config.Name, Config.Mode)
+    kp, _, err := kv.Get(remoteConfKey, nil)
+    if err != nil {
+        return
+    }
+    err = json.Unmarshal(kp.Value, &Config)
+    if err != nil {
+        return
+    }
+    go func() {
+        for range time.Tick(time.Second * 2) {
+            kp, _, err := kv.Get(remoteConfKey, nil)
+            if err != nil {
+                log.Fatal(err)
+                return
+            }
+            err = json.Unmarshal(kp.Value, &Config)
+            fmt.Println(Config)
+        }
+    }()
 }

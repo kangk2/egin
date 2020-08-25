@@ -9,44 +9,61 @@
 5. Go语言圣经(文档) [这里](https://github.com/golang-china/gopl-zh)
 
 ### 目录结构定义
+
 ```bash
 ./
-├── main.go 入口文件, 类似 php index.php
-├── app.json 配置文件
-├── config 配置目录
-│   │── routes.go 路由配置
-│   │── routes 业务路由文件夹
-│   │   └── user.go 用户业务的路由定义
-│   │── middlewares.go 全局中间件
+├── README.md
+├── app.json 运行时配置
+├── config 启动性配置
+│   ├── middlewares.go
+│   ├── routes
+│   │   └── user.go
+│   └── routes.go
+├── consumer 消费者
+│   └── rabbmitmq_exmaple.go mq样例
 ├── controller 控制器
 │   └── user.go
-├── model 数据库模型
-│   └── user.go 对应数据源 user 表
-├── pkg 脚手架类库
-│   ├── bootstrap.go 
+├── docs 文档
+│   ├── consul.md
+│   └── grafana-prometheus.md
+├── go.mod 类目 composer.json
+├── go.sum 类似 composer.lock
+├── main.go 项目入口
+├── model 数据模型
+│   ├── common_config.go
+│   └── user.go
+├── pkg 脚手架-业务无关
+│   ├── bootstrap.go 启动入口
+│   ├── cache 缓存
+│   │   ├── db.go
+│   │   ├── hook.go
+│   │   └── redis.go
 │   ├── consts 常量
-│   │   └── code.go 系统CODE码及信息
-│   ├── db 数据库访问层
-│   │   ├── db.go db连接相关
-│   │   ├── model.go 模型 数据操作 CRUD
+│   │   └── code.go 系统错误码及信息
+│   ├── db mysql-model
+│   │   ├── db.go db链接
+│   │   ├── model.go 模型 crud
 │   │   ├── sql.go sql构造
-│   │   └── sql_test.go sql构造的测试文件
-│   ├── lib 统一类库
+│   │   └── sql_test.go
+│   ├── lib 通用类库
 │   │   ├── func.go
 │   │   ├── http.go
 │   │   └── string.go
-│   ├── middleware http访问的中间件
-│   │   │── logger.go
-│   │   └── auth.go 鉴权中间件 IpAuth/AKSK...
-│   ├── route 路由解析注册
+│   ├── middleware gin中间件
+│   │   ├── auth.go 鉴权中间件 IpAuth/AKSK...
+│   │   ├── jwt.go
+│   │   ├── logger.go http请求日志
+│   │   └── prometheus.go http请求打点
+│   ├── route 路由处理
 │   │   └── route.go
-│   └── utils 通用工具
-│       ├── config.go
-│       └── logger.go
+│   └── utils 辅助工具
+│       ├── config.go 配置信息 local + app.json + consul
+│       ├── consul.go consul client
+│       ├── jwt.go
+│       ├── logger.go 日志
+│       ├── rabbitmq.go mq常用方法
+│       └── validator.go 验证器的初始化
 ├── service 业务服务
-├── go.mod 项目依赖, 类似 php composer.json
-├── go.sum 依赖的锁定, 类似 php composer.lock
-├── README.md
 ```
 
 #### Go的安装 
@@ -109,7 +126,7 @@
 - [ ] prometheus打点
     - [x] api打点
     - [ ] db数据打点
-    - [ ] redis打点
+    - [x] redis打点
 
 ### 微服务
 
@@ -117,8 +134,8 @@
 
 ### 其他
 
-- [ ] consul
-- [ ] 配置中心
+- [x] consul
+- [x] 基于consul的配置中心
 - [ ] 开关服务
 - [ ] 规则引擎
 - [x] RabbitMQ
