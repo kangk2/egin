@@ -143,6 +143,8 @@
 - [ ] kafka
 - [ ] nsq
 - [x] 事件总线
+- [ ] 配置解密
+- [ ] swagger
 
 ### 参考资料
 - [GoProxy解决安装慢](https://goproxy.cn/)
@@ -181,10 +183,26 @@ godoc -http=:8888
 air
 ```
 
+### 如何参与
+
+```bash
+go get github.com/daodao97/egin
+cd $GOPATH/src/github.com/daodao97/egin
+goland . #编辑器打开  vscode .
+air #开发模式启动
+```
+
+### 规划
+
+当功能逐步完善稳定后 `pkg` 目录下的公用库将独立成为一个 `go package`, 方便在任意下面中复用
+
 ### 常见问题
 
 -  dial tcp 127.0.0.1:8080: socket: too many open files
 
     [永久修改 mac mac files/proc 限制](https://javasgl.github.io/mac-max-limit/)
+
+
+
 
 
