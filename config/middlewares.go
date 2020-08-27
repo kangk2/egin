@@ -12,6 +12,7 @@ type MiddlewaresSlice []func() gin.HandlerFunc
 var HttpMiddlewares = MiddlewaresSlice{
 	middleware.Cors,
 	middleware.IPAuth,
+	middleware.IpLimiter,
 	middleware.HttpLog,
 	middleware.Prometheus,
 }

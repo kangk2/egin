@@ -50,6 +50,12 @@
             "allowedIpList": [
                 "127.0.0.1"
             ]
+        },
+        "ipLimiter": {
+            "enable": false,
+            "ipLimit": {
+                "127.0.0.1": 1
+            }
         }
     },
     "consul": "http://127.0.0.1:8500"

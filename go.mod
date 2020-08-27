@@ -3,6 +3,7 @@ module github.com/daodao97/egin
 go 1.13
 
 require (
+	github.com/davecgh/go-spew v1.1.1
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gin-gonic/gin v1.6.3
 	github.com/go-playground/locales v0.13.0
@@ -18,6 +19,7 @@ require (
 	github.com/prometheus/client_golang v1.7.1
 	github.com/sirupsen/logrus v1.6.0
 	github.com/streadway/amqp v1.0.0
+	golang.org/x/net v0.0.0-20190923162816-aa69164e4478
 	google.golang.org/grpc v1.31.0
 	google.golang.org/protobuf v1.23.0
 )

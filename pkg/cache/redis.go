@@ -24,6 +24,10 @@ func (r *Redis) init() {
 		return
 	}
 
+	if r.Connection == "" {
+		r.Connection = "default"
+	}
+
 	_, ok := utils.Config.Database[r.Connection]
 	if !ok {
 		logger.Error(fmt.Sprintf("redis connection %s not found", r.Connection))
@@ -45,4 +49,14 @@ func (r *Redis) Get(key string) (string, error) {
 func (r *Redis) Set(key string, value interface{}, expiration time.Duration) error {
 	r.init()
 	return r.rdb.Set(ctx, key, value, expiration).Err()
+}
+
+func (r *Redis) Incr(key string) error {
+	r.init()
+	return r.rdb.Incr(ctx, key).Err()
+}
+
+func (r *Redis) PExpire(key string, expiration time.Duration) error {
+	r.init()
+	return r.rdb.PExpire(ctx, key, expiration).Err()
 }

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"container/ring"
 	"fmt"
 	"log"
 	"sync"
@@ -14,12 +15,26 @@ import (
 var wg sync.WaitGroup
 
 func main() {
-	//api()
+	api()
 	//redis()
 	//valid()
 	//utils.ConsulKVTest()
 	//utils.ConsulDeRegister()
+	//channel()
 	fmt.Println("over")
+}
+
+func channel() {
+	heade := ring.New(5)
+	for i := 0; i < 5; i++ {
+		heade.Value = 0
+		heade = heade.Next()
+	}
+	//heade.Value = 1
+	//heade.Value = 2
+	heade.Do(func(i interface{}) {
+		fmt.Println(i)
+	})
 }
 
 func redis() {
@@ -33,10 +48,10 @@ func redis() {
 }
 
 func api() {
-	for i := 0; i < 5000; i++ {
+	for i := 0; i < 6; i++ {
 		wg.Add(1)
 		go func(index int) {
-			res, err := lib.Get("http://127.0.0.1:8080/v1/user", map[string]string{}, map[string]string{})
+			res, err := lib.Get("http://127.0.0.1:8080/user", map[string]string{}, map[string]string{})
 			if err != nil {
 				log.Println("ERROR", err)
 			} else {

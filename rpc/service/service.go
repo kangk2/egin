@@ -23,7 +23,7 @@ func (s *server) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloRe
 	return &pb.HelloReply{Message: "Hello " + in.Name, Code: 200}, nil
 }
 
-type serverB struct {}
+type serverB struct{}
 
 func (s *serverB) SayHello(ctx context.Context, in *pb.ByeRequest) (*pb.ByeReply, error) {
 	return &pb.ByeReply{Message: "bye " + in.Name, Code: 200}, nil

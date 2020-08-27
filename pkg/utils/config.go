@@ -36,6 +36,10 @@ type ConfigStruct struct {
 			Enable        bool
 			AllowedIpList []string
 		}
+		IpLimiter struct {
+			Enable  bool
+			IPLimit map[string]int
+		}
 	}
 	Jwt struct {
 		Secret      string
