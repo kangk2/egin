@@ -19,7 +19,6 @@ func init() {
 			Handler: controller.User{}.Get,
 			Middlewares: []gin.HandlerFunc{
 				middleware.HttpLog(),
-				middleware.ApiLimiter(&utils.Limiter{LimitCount: 1}),
 			},
 			Param: new(controller.ParamsValidate),
 			CustomValidateFuncs: []utils.CustomValidateFunc{

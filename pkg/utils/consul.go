@@ -7,7 +7,7 @@ import (
 	consulapi "github.com/hashicorp/consul/api"
 )
 
-//var address = "127.0.0.1:8500"
+// var address = "127.0.0.1:8500"
 var serviceId = "egin-api"
 
 func ConsulClient(address string) (*consulapi.Client, error) {

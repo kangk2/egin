@@ -8,9 +8,9 @@ import (
 
 // 基于滑动时间窗口的限流器
 type Limiter struct {
-	LimitCount  int        //限制数量
-	limitBucket int        //滑动窗口数
-	head        *ring.Ring //环形队列（链表)
+	LimitCount  int        // 限制数量
+	limitBucket int        // 滑动窗口数
+	head        *ring.Ring // 环形队列（链表)
 	initEd      bool
 }
 
@@ -27,7 +27,7 @@ func (l *Limiter) init() {
 	l.head = head
 	l.initEd = true
 	go func() {
-		//ms级别，limitBucket int = 10意味将每秒分为10份，每份100ms
+		// ms级别，limitBucket int = 10意味将每秒分为10份，每份100ms
 		for range time.Tick(time.Millisecond * time.Duration(1000/l.limitBucket)) {
 			l.head.Value = 0
 			l.head = l.head.Next()

@@ -42,7 +42,7 @@ func main() {
 	pb.RegisterHelloServer(s, &server{})
 	pb.RegisterByeServer(s, &serverB{})
 
-	//在 server 中 注册 gRPC 的 reflection service
+	// 在 server 中 注册 gRPC 的 reflection service
 
 	reflection.Register(s)
 

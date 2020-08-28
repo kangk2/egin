@@ -149,6 +149,7 @@ func Query(db *sql.DB, _sql string, args ...interface{}) ([]map[string]string, e
 	var result []map[string]string
 
 	stmt, err := db.Prepare(_sql)
+	defer stmt.Close()
 
 	if err != nil {
 		logger().Error("db.query.prepare fail", map[string]interface{}{

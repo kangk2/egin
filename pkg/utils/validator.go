@@ -25,9 +25,9 @@ func InitValidator() {
 	uni := ut.New(zh.New())
 	Trans, _ = uni.GetTranslator("zh")
 	if validate, ok := binding.Validator.Engine().(*validator.Validate); ok {
-		//注册翻译器
+		// 注册翻译器
 		_ = zh_translations.RegisterDefaultTranslations(validate, Trans)
-		//注册一个函数，获取struct tag里自定义的label作为字段名
+		// 注册一个函数，获取struct tag里自定义的label作为字段名
 		validate.RegisterTagNameFunc(func(fld reflect.StructField) string {
 			name := fld.Tag.Get("label")
 			return name
@@ -44,9 +44,9 @@ type CustomValidateFunc struct {
 }
 
 func RegCustomValidateFunc(customValidate CustomValidateFunc) {
-	//注册自定义函数
+	// 注册自定义函数
 	_ = Validate.RegisterValidation(customValidate.TagName, customValidate.Handle)
-	//根据提供的标记注册翻译
+	// 根据提供的标记注册翻译
 	_ = Validate.RegisterTranslation(customValidate.TagName, Trans, func(ut ut.Translator) error {
 		return ut.Add(customValidate.TagName, customValidate.Message, true)
 	}, func(ut ut.Translator, fe validator.FieldError) string {

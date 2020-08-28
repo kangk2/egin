@@ -31,9 +31,9 @@ type Record map[string]interface{}
 
 type Records map[int]Record
 
-//record {"field":"val", "field2":"val2"}
-//return arg1: (`field`, `field2`) values (?, ?)
-//return arg2: ["val", "val2"]
+// record {"field":"val", "field2":"val2"}
+// return arg1: (`field`, `field2`) values (?, ?)
+// return arg2: ["val", "val2"]
 func InsertRecordToQuery(record Record) (string, []interface{}) {
 	var fields []string
 	var value []string
@@ -53,9 +53,9 @@ func InsertRecordToQuery(record Record) (string, []interface{}) {
 	return _sql, args
 }
 
-//record {"field":"val", "field2":"val2"}
-//return arg1: set `field` = ?, `field2` = ?
-//return arg2: ["val", "val2"]
+// record {"field":"val", "field2":"val2"}
+// return arg1: set `field` = ?, `field2` = ?
+// return arg2: ["val", "val2"]
 func UpdateRecordToQuery(record Record) (string, []interface{}) {
 	var scopes []string
 	var args []interface{}
@@ -66,9 +66,9 @@ func UpdateRecordToQuery(record Record) (string, []interface{}) {
 	return strings.Join(scopes, ", "), args
 }
 
-//field {"field":"val", "field2":{in:[1,3]}}
-//return arg1: where `field` = ? and `field2` in (?, ?)
-//return arg2: ["val", "val2"]
+// field {"field":"val", "field2":{in:[1,3]}}
+// return arg1: where `field` = ? and `field2` in (?, ?)
+// return arg2: ["val", "val2"]
 func FilterToQuery(filter Filter) (string, []interface{}) {
 	var sql string
 	var args []interface{}

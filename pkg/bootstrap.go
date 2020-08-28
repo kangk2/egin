@@ -26,7 +26,7 @@ func (boot *Bootstrap) Start() {
 	db.InitDb()
 	cache.InitDb()
 	gin.SetMode(utils.Config.Mode)
-	//gin.DefaultWriter = ginLogger()
+	// gin.DefaultWriter = ginLogger()
 	boot.engine = gin.Default()
 	boot.initValidator()
 	boot.regMiddlewares()

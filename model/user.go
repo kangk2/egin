@@ -46,8 +46,8 @@ func init() {
 		BaseModel: db.BaseModel{
 			Connection: "default",
 			Table:      "user",
-			//FakeDelete: true,
-			//FakeDelKey: "status",
+			// FakeDelete: true,
+			// FakeDelKey: "status",
 		},
 	}
 }
