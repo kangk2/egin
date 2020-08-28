@@ -201,6 +201,10 @@ air #开发模式启动
 -  dial tcp 127.0.0.1:8080: socket: too many open files
 
     [永久修改 mac mac files/proc 限制](https://javasgl.github.io/mac-max-limit/)
+ 
+ - db查询中的内存泄露问题
+ 
+   [databases/sql内存泄露](https://gocn.vip/topics/9963)
 
 
 
