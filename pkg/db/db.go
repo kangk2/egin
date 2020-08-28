@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"sync"
+	"time"
 
 	_ "github.com/go-sql-driver/mysql"
 
@@ -100,6 +101,7 @@ func Exec(db *sql.DB, _sql string, args ...interface{}) (int64, int64, error) {
 		})
 		return 0, 0, err
 	}
+	defer stmt.Close()
 
 	res, err := stmt.Exec(args...)
 	if err != nil {
@@ -148,8 +150,7 @@ func Exec(db *sql.DB, _sql string, args ...interface{}) (int64, int64, error) {
 func Query(db *sql.DB, _sql string, args ...interface{}) ([]map[string]string, error) {
 	var result []map[string]string
 
-	stmt, err := db.Prepare(_sql)
-	defer stmt.Close()
+	stmt, err := makeStmt(db, _sql)
 
 	if err != nil {
 		logger().Error("db.query.prepare fail", map[string]interface{}{
@@ -159,6 +160,7 @@ func Query(db *sql.DB, _sql string, args ...interface{}) ([]map[string]string, e
 		})
 		return result, err
 	}
+	defer stmt.Close()
 
 	rows, err := stmt.Query(args...)
 	if err != nil {
@@ -204,4 +206,46 @@ func Rows2SliceMap(rows *sql.Rows) (list []map[string]string, err error) {
 		return list, err
 	}
 	return list, nil
+}
+
+var statements sync.Map
+
+type stmtData struct {
+	stmt     *sql.Stmt
+	createAt time.Time
+}
+
+func makeStmt(db *sql.DB, sqlStr string) (stmt *sql.Stmt, err error) {
+	value, exist := statements.Load(sqlStr)
+	if exist {
+		return value.(stmtData).stmt, nil
+	}
+
+	stmt, err = db.Prepare(sqlStr)
+
+	if err != nil {
+		return stmt, err
+	}
+
+	statements.Store(sqlStr, stmtData{
+		stmt:     stmt,
+		createAt: time.Now(),
+	})
+
+	return stmt, nil
+}
+
+func clearStmt() {
+	for range time.Tick(time.Second) {
+		statements.Range(func(key, value interface{}) bool {
+			if time.Now().Unix()-value.(stmtData).createAt.Unix() > 60 {
+				statements.Delete(key)
+			}
+			return true
+		})
+	}
+}
+
+func init() {
+	go clearStmt()
 }

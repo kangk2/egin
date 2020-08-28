@@ -15,7 +15,8 @@ import (
 var wg sync.WaitGroup
 
 func main() {
-	api()
+	fmt.Println(time.Now().Unix())
+	// api()
 	// redis()
 	// valid()
 	// utils.ConsulKVTest()
